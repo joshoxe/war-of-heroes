@@ -1,0 +1,5 @@
+{
+  "dependencies": {
+    "angularx-social-login": "^3.5.4"
+  }
+}
