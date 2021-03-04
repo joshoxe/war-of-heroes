@@ -1,0 +1,8 @@
+<button (click)="signInWithGoogle()">Sign in with Google</button>
+
+
+<div *ngIf="signedIn">
+    {{ user.name }}
+    {{ user.email }}
+    {{ user.idToken }}
+</div>
