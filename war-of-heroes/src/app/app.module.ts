@@ -25,7 +25,7 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
         providers: [
           {
             id: GoogleLoginProvider.PROVIDER_ID,
-            provider: new GoogleLoginProvider('623630888688-jevgjgdl7enoseinq185v1t447cc30f9.apps.googleusercontent.com')
+            provider: new GoogleLoginProvider('')
           }
         ]
       } as SocialAuthServiceConfig
