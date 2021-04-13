@@ -1,23 +1,20 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SocialUser } from 'angularx-social-login';
-import { Observable } from 'rxjs';
 import { User } from './user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
+  private baseUrl = 'https://localhost:44328/';
   private usersEndpoint = 'user/login';
   user: User;
+  signedIn: boolean;
 
   constructor(private http: HttpClient) {}
 
-  setUser(user: User) {
-    this.user = user;
-  }
-
-  loginUser(user: SocialUser): Observable<User> {
+  loginUser(user: SocialUser): void {
     const options = {
       headers: new HttpHeaders({
         'Access-Control-Allow-Origin': '*',
@@ -26,6 +23,16 @@ export class UserService {
       }),
     };
 
-    return this.http.post<User>(`https://localhost:44328/${this.usersEndpoint}`, user, options)
+    this.http
+      .post<User>(`${this.baseUrl}${this.usersEndpoint}`, user, options)
+      .subscribe((user) => {
+        this.user = user;
+        this.signedIn = (this.user != null);
+      });
+
+  }
+
+  isSignedIn(): boolean {
+    return (this.user != null);
   }
 }
