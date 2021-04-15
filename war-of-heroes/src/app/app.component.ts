@@ -8,7 +8,19 @@ import { UserService } from './user.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor() {
+  constructor(private userService: UserService) {
   }
-  title = 'war-of-heroes';
+  title = 'War of Heroes';
+
+  isSignedIn(): boolean {
+    return this.userService.signedIn;
+  }
+
+  getUserName(): string {
+    if (!this.isSignedIn()) {
+      return "";
+    }
+
+    return this.userService.getUserFirstName();
+  }
 }

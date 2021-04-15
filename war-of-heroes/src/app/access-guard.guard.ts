@@ -1,5 +1,5 @@
 import { Injectable } from "@angular/core";
-import { ActivatedRouteSnapshot, CanActivate } from "@angular/router";
+import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from "@angular/router";
 import { Observable } from "rxjs";
 import { UserService } from "./user.service";
 
@@ -7,15 +7,17 @@ import { UserService } from "./user.service";
   providedIn: 'root'
 })
 export class AccessGuard implements CanActivate {
-    constructor(private userService: UserService) {
+    constructor(private userService: UserService, private router: Router) {
 
     }
 
-  canActivate(route: ActivatedRouteSnapshot): boolean {
+  canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): boolean {
     const requiresLogin = route.data.requiresLogin || false;
 
     if (requiresLogin) {
-      return this.userService.isSignedIn();
+      if (!this.userService.isSignedIn()) {
+        this.router.navigate(['login'], { queryParams: { returnUrl: state.url }});
+      }
     }
 
     return true;

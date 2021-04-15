@@ -1,4 +1,4 @@
 export interface User {
-    id: number;
+    googleID: number;
     firstName: string;
 }
