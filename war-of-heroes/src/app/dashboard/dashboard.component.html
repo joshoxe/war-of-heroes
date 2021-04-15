@@ -1,1 +1,23 @@
-<p>dashboard works!</p>
+<h2>My Heroes</h2>
+<ul class="heroes">
+  <li *ngFor="let hero of heroes" (click)="onSelect(hero)">
+    <span class="badge">{{ hero.id }}</span> {{ hero.name }}
+  </li>
+</ul>
+
+<div *ngIf="selectedHero">
+  <h2>{{ selectedHero.name | uppercase }} Details</h2>
+  <div><span>id: </span>{{ selectedHero.id }}</div>
+  <div>
+    <label for="hero-name">Hero name: </label>
+    {{selectedHero.name}}
+  </div>
+  <div>
+    <label for="hero-name">Attack Damage </label>
+    {{selectedHero.attackDamage}}
+  </div>
+  <div>
+    <label for="hero-name">Defence: </label>
+    {{selectedHero.defenseAmount}}
+  </div>
+</div>
