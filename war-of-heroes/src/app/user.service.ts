@@ -9,7 +9,7 @@ import { User } from './user';
 export class UserService {
   private baseUrl = 'https://localhost:44328/';
   private usersEndpoint = 'user/login';
-  user: User;
+  private user: User;
   signedIn: boolean;
 
   constructor(private http: HttpClient) {}
@@ -34,5 +34,13 @@ export class UserService {
 
   isSignedIn(): boolean {
     return (this.user != null);
+  }
+
+  getUserFirstName(): string {
+    if (!this.isSignedIn()) {
+      return "";
+    }
+
+    return this.user.firstName;
   }
 }
