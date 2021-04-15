@@ -12,7 +12,6 @@ import { User } from '../user';
 export class LoginComponent implements OnInit {
   error: string;
   googleUser: SocialUser;
-  signedIn: boolean;
   user: User;
 
   constructor(
@@ -30,22 +29,17 @@ export class LoginComponent implements OnInit {
 
   ngOnInit(): void {
     this.authService.authState.subscribe((user) => {
-      this.googleUser = user;
-      this.signedIn = user != null;
-
-      if (!this.signedIn) {
-        this.error = "Couldn't sign you in.";
+      if (user == null) {
+        this.error = "Couldn't authorise you with the Google service.";
         return;
       }
 
+      this.googleUser = user;
       this.loginUser();
-      this.userService.setUser(this.user);
     });
   }
 
   loginUser() {
-    this.userService
-      .loginUser(this.googleUser)
-      .subscribe((user) => (this.user = user));
+    this.userService.loginUser(this.googleUser);
   }
 }
