@@ -1,0 +1,21 @@
+<div class="container">
+  <div class="row">
+    <div class="col-3">
+      <h5>My Heroes</h5>
+
+      <ul class="heroes">
+        <li
+          *ngFor="let hero of heroes"
+          [class.selected]="hero === selectedHero"
+          (click)="onSelect(hero)"
+        >
+          <span class="badge">{{ hero.id }}</span> {{ hero.name }}
+        </li>
+      </ul>
+    </div>
+
+    <div class="col-9">
+      <app-hero-card [hero]="selectedHero"></app-hero-card>
+    </div>
+  </div>
+</div>

@@ -13,6 +13,11 @@ export class HeroService {
   heroesUrl = 'https://localhost:44398/hero';
 
   getHeroes(): Observable<Hero[]> {
-    return this.http.get<Hero[]>(this.heroesUrl)
+    return this.http.get<Hero[]>(this.heroesUrl);
   }
+
+  getHeroesFromList(ids: number[]): Observable<Hero[]> {
+    return this.http.post<Hero[]>(this.heroesUrl + "/ids", { heroIds: ids });
+  }
+  
 }
