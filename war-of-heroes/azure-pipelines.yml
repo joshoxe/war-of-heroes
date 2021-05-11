@@ -6,36 +6,46 @@ pool:
 
 variables:
   - group: Deployment
-
 stages:
+
   - stage: Build
     jobs:
       - job: BuildFrontend
         steps:
           - checkout: self
-          - task: NodeTool@0
-            inputs:
-              versionSpec: '10.x'
-            displayName: 'Install Node.js'
 
           - script: |
-              cd .\war-of-heroes\
-              npm install -g @angular/cli
+              cd war-of-heroes/
+
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '13.x'
+              checkLatest: true
+          - task: Npm@1
+            inputs:
+                command: 'install'
+          - task: Npm@1
+            inputs:
+              command: 'custom'
+              customCommand: 'install -g @angular/cli'
+
+          - script: |
+              cd war-of-heroes/
               npm install
               ng build --prod
             displayName: 'install and build'
           - task: ArchiveFiles@2
             displayName: 'Archive files'
             inputs:
-              rootFolderOrFile: '$(System.DefaultWorkingDirectory)/WarOfHeroes'
-              includeRootFolder: false
-              archiveType: zip
-              archiveFile: $(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip
+              rootFolderOrFile: '$(Build.BinariesDirectory)'
+              includeRootFolder: true
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
               replaceExistingArchive: true
   
           - task: PublishBuildArtifacts@1
             inputs:
-              PathtoPublish: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
               ArtifactName: 'drop'
               publishLocation: 'Container'
 
