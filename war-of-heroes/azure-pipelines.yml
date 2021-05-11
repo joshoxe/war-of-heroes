@@ -6,22 +6,26 @@ pool:
 
 variables:
   - group: Deployment
-
 stages:
+
   - stage: Build
     jobs:
       - job: BuildFrontend
         steps:
           - checkout: self
+
           - task: NodeTool@0
             inputs:
-              versionSpec: '10.x'
-            displayName: 'Install Node.js'
+              versionSpec: '13.x'
+              checkLatest: true
+          - task: Npm@1
+            inputs:
+                command: 'install'
+          - task: Npm@1
+            inputs:
+                command: 'install -g @angular/cli'
 
           - script: |
-              cd .\war-of-heroes\
-              npm install -g @angular/cli
-              npm install
               ng build --prod
             displayName: 'install and build'
           - task: ArchiveFiles@2
