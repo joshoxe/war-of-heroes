@@ -31,6 +31,7 @@ stages:
 
           - script: |
               cd war-of-heroes/
+              npm install
               ng build --prod
             displayName: 'install and build'
           - task: ArchiveFiles@2
