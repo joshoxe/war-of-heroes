@@ -70,10 +70,10 @@ stages:
               buildType: "current"
               artifactName: "drop"
               targetPath: "$(System.DefaultWorkingDirectory)"
-        - task: AzureRmWebAppDeployment@4
+        - task: AzureWebApp@1
           inputs:
-              ConnectionType: "AzureRM"
-              azureSubscription: "warOfHeroes"
-              appType: "webApp"
-              WebAppName: "warOfHeroes"
-              packageForLinux: "$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip"
+            azureSubscription: 'warOfHeroes'
+            appType: 'webApp'
+            appName: 'warOfHeroes'
+            package: '$(System.DefaultWorkingDirectory)/**/*.zip'
+            deploymentMethod: 'auto'
