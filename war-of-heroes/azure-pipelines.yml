@@ -18,7 +18,7 @@ stages:
               versionSpec: '10.x'
             displayName: 'Install Node.js'
 
-          - script:
+          - script: |
               cd .\war-of-heroes\
               npm install -g @angular/cli
               yarn install
