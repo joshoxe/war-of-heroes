@@ -1,0 +1,13 @@
+.card {
+    max-width: 18rem;
+    margin: 5%;
+}
+
+label {
+    font-size: 0.9rem;
+    color: violet;
+}
+
+.hero-description {
+    font-size: 0.7rem;
+}
