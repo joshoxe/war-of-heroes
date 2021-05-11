@@ -76,4 +76,4 @@ stages:
               azureSubscription: "warOfHeroes"
               appType: "webApp"
               WebAppName: "warOfHeroes"
-              packageForLinux: "$(System.DefaultWorkingDirectory)/WarOfHeroes.zip"
+              packageForLinux: "$(System.DefaultWorkingDirectory)/$(Build.BuildId).zip"
