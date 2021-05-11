@@ -21,8 +21,8 @@ stages:
           - script: |
               cd .\war-of-heroes\
               npm install -g @angular/cli
-              yarn install
-              yarn build --prod
+              npm install
+              ng build --prod
             displayName: 'install and build'
           - task: ArchiveFiles@2
             displayName: 'Archive files'
