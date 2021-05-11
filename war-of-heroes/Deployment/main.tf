@@ -64,6 +64,6 @@ resource "azurerm_app_service" "frontend_es_app_service" {
   app_service_plan_id = azurerm_app_service_plan.app_service_plan.id
   https_only = true
   site_config {
-      linux-fx-version = "NODE|10.14"
+      linux_fx_version = "NODE|10.14"
   }
 }
