@@ -15,7 +15,7 @@ stages:
           - checkout: self
 
           - script: |
-              cd .\war-of-heroes\
+              cd war-of-heroes/
 
           - task: NodeTool@0
             inputs:
