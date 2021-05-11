@@ -57,13 +57,13 @@ resource "azurerm_app_service" "heroes_app_service" {
     }
 }
   
-resource "azurerm_app_service" "frontend_es_app_service" {
+resource "azurerm_app_service" "frontend_app_service" {
   name                = "warOfHeroes"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   app_service_plan_id = azurerm_app_service_plan.app_service_plan.id
   https_only = true
   site_config {
-      linux_fx_version = "NODE|10.14"
+      windows_fx_version = "DOTNETCORE|3.1"
   }
 }
