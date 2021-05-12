@@ -63,6 +63,7 @@ resource "azurerm_app_service" "frontend_app_service" {
   resource_group_name = azurerm_resource_group.rg.name
   app_service_plan_id = azurerm_app_service_plan.app_service_plan.id
   https_only = true
+  default_documents = "index.html"
   site_config {
       windows_fx_version = "DOTNETCORE|3.1"
   }
