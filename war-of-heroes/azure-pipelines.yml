@@ -34,10 +34,8 @@ stages:
             displayName: 'Archive files'
             inputs:
               rootFolderOrFile: '$(Build.BinariesDirectory)/war-of-heroes/build'
-              includeRootFolder: true
               archiveType: 'zip'
               archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
-              replaceExistingArchive: true
   
           - task: PublishBuildArtifacts@1
             inputs:
