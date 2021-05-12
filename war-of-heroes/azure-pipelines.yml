@@ -1,0 +1,74 @@
+trigger:
+  - main
+
+pool:
+  vmImage: 'ubuntu-18.04'
+
+variables:
+  - group: Deployment
+stages:
+
+  - stage: Build
+    jobs:
+      - job: BuildFrontend
+        steps:
+          - checkout: self
+
+          - script: |
+              cd war-of-heroes/
+
+          - task: NodeTool@0
+            inputs:
+              versionSpec: '12.x'
+              checkLatest: true
+          - task: Npm@1
+            inputs:
+              command: 'custom'
+              customCommand: 'install -g @angular/cli'
+          - script: |
+              cd war-of-heroes/
+              yarn install
+              yarn build --prod
+            displayName: 'install and build'
+          - task: ArchiveFiles@2
+            displayName: 'Archive files'
+            inputs:
+              rootFolderOrFile: 'war-of-heroes/build'
+              includeRootFolder: false
+              archiveType: 'zip'
+              archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
+              replaceExistingArchive: true
+  
+          - task: PublishBuildArtifacts@1
+            inputs:
+              PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+              ArtifactName: 'drop'
+              publishLocation: 'Container'
+
+  - stage: Deploy
+    jobs:
+      - job: Deploy
+        steps:
+        - checkout: self
+        - script: |
+            terraform init
+            terraform plan
+            terraform apply -auto-approve
+          workingDirectory: "$(System.DefaultWorkingDirectory)/war-of-heroes/Deployment/"
+          env:
+            ARM_SUBSCRIPTION_ID: $(SUBSCRIPTION-ID)
+            ARM_TENANT_ID: $(TERRAFORM-TENANT-ID)      
+            ARM_ACCESS_KEY: $(TF-ACCESS-KEY)        
+            ARM_CLIENT_ID: $(TERRAFORM-CLIENT-ID)
+            ARM_CLIENT_SECRET: $(TERRAFORM-CLIENT-SECRET)
+        - task: DownloadPipelineArtifact@2
+          inputs:
+              buildType: "current"
+              artifactName: "drop"
+              targetPath: "$(System.DefaultWorkingDirectory)"
+        - task: AzureWebApp@1
+          inputs:
+            azureSubscription: 'warOfHeroes'
+            appType: 'webAppLinux'
+            appName: 'warOfHeroes'
+            package: '$(System.DefaultWorkingDirectory)/**/*.zip'

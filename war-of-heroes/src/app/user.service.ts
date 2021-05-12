@@ -1,14 +1,16 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SocialUser } from 'angularx-social-login';
+import { Observable } from 'rxjs';
+import { Hero } from './hero';
 import { User } from './user';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private baseUrl = 'https://localhost:44328/';
-  private usersEndpoint = 'user/login';
+  private userUrl = 'https://localhost:44328/';
+  private usersEndpoint = 'user';
   private user: User;
   signedIn: boolean;
 
@@ -24,12 +26,13 @@ export class UserService {
     };
 
     this.http
-      .post<User>(`${this.baseUrl}${this.usersEndpoint}`, user, options)
+      .post<User>(`${this.userUrl}${this.usersEndpoint}/login`, user, options)
       .subscribe((user) => {
         this.user = user;
         this.signedIn = (this.user != null);
       });
 
+      localStorage.setItem("idToken", user.idToken);
   }
 
   isSignedIn(): boolean {
@@ -42,5 +45,19 @@ export class UserService {
     }
 
     return this.user.firstName;
+  }
+
+  getUserInventory() : Observable<number[]> {
+    console.log(localStorage.getItem("idToken"));
+    const options = {
+      headers: new HttpHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        Authorization: 'bearer ' + localStorage.getItem("idToken"),
+      }),
+    };
+
+    return this.http
+      .get<number[]>(`${this.userUrl}${this.usersEndpoint}/${this.user.id}/inventory`, options);
   }
 }

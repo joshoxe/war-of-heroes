@@ -9,12 +9,16 @@ import { FontAwesomeModule } from '@fortawesome/angular-fontawesome';
 import { AppRoutingModule } from './app-routing.module';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AccessGuard } from './access-guard.guard';
+import { UserHeroesComponent } from './user-heroes/user-heroes.component';
+import { HeroCardComponent } from './hero-card/hero-card.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     LoginComponent,
-    DashboardComponent
+    DashboardComponent,
+    UserHeroesComponent,
+    HeroCardComponent
   ],
   imports: [
     BrowserModule,

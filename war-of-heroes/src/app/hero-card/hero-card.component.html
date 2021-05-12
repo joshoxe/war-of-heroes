@@ -1,0 +1,35 @@
+<div class="card text-white bg-dark mb-3" *ngIf="hero">
+  <div class="card-body">
+    <div class="row">
+      <div class="col-sm">
+        {{ hero.name }}<br />
+        <label for="hero-name">Hero</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm">
+        {{ hero.attackDamage }}
+      </div>
+
+      <div class="col-sm">
+        {{ hero.ultimateAttackDamage }}
+      </div>
+    </div>
+
+
+    <div class="row">
+      <div class="col-sm">
+        <label for="hero-name">Attack</label>
+      </div>
+
+      <div class="col-sm">
+        <label for="hero-name">Ultimate Attack</label>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-sm">
+        <span class="hero-description">{{ hero.description }}</span>
+      </div>
+    </div>
+  </div>
+</div>
