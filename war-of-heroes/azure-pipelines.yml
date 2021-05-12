@@ -69,7 +69,5 @@ stages:
         - task: AzureWebApp@1
           inputs:
             azureSubscription: 'warOfHeroes'
-            appType: 'webApp'
             appName: 'warOfHeroes'
             package: '$(System.DefaultWorkingDirectory)/**/*.zip'
-            deploymentMethod: 'auto'
