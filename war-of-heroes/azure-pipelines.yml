@@ -69,5 +69,6 @@ stages:
         - task: AzureWebApp@1
           inputs:
             azureSubscription: 'warOfHeroes'
+            appType: 'webAppLinux'
             appName: 'warOfHeroes'
             package: '$(System.DefaultWorkingDirectory)/**/*.zip'
