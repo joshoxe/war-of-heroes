@@ -4,12 +4,13 @@ import { SocialUser } from 'angularx-social-login';
 import { Observable } from 'rxjs';
 import { Hero } from './hero';
 import { User } from './user';
+import { environment } from './../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class UserService {
-  private userUrl = 'https://localhost:44328/';
+  private userUrl = environment.userApiUrl;
   private usersEndpoint = 'user';
   private user: User;
   signedIn: boolean;
