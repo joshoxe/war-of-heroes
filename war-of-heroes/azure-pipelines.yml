@@ -27,8 +27,8 @@ stages:
               customCommand: 'install -g @angular/cli'
           - script: |
               cd war-of-heroes/
-              npm install
-              ng build --prod
+              yarn install
+              yarn build --prod
             displayName: 'install and build'
           - task: ArchiveFiles@2
             displayName: 'Archive files'
