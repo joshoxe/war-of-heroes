@@ -33,7 +33,7 @@ stages:
           - task: ArchiveFiles@2
             displayName: 'Archive files'
             inputs:
-              rootFolderOrFile: '$(Build.BinariesDirectory)/war-of-heroes/build'
+              rootFolderOrFile: 'war-of-heroes/build'
               archiveType: 'zip'
               archiveFile: '$(Build.ArtifactStagingDirectory)/$(Build.BuildId).zip'
   
