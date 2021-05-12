@@ -65,5 +65,6 @@ resource "azurerm_app_service" "frontend_app_service" {
   https_only = true
   site_config {
       windows_fx_version = "DOTNETCORE|3.1"
+      default_documents = ["index.html"]
   }
 }
