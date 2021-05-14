@@ -70,5 +70,5 @@ stages:
           inputs:
             azureSubscription: 'warOfHeroes'
             appType: 'webAppLinux'
-            appName: 'warOfHeroes'
+            appName: 'warOfHeroesFrontend'
             package: '$(System.DefaultWorkingDirectory)/**/*.zip'
