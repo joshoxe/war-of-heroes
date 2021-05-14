@@ -27,7 +27,7 @@ export class UserService {
     };
 
     this.http
-      .post<User>(`${this.userUrl}${this.usersEndpoint}/login`, user, options)
+      .post<User>(`${this.userUrl}/${this.usersEndpoint}/login`, user, options)
       .subscribe((user) => {
         this.user = user;
         this.signedIn = (this.user != null);
@@ -59,6 +59,6 @@ export class UserService {
     };
 
     return this.http
-      .get<number[]>(`${this.userUrl}${this.usersEndpoint}/${this.user.id}/inventory`, options);
+      .get<number[]>(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/inventory`, options);
   }
 }
