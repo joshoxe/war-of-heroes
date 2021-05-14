@@ -37,12 +37,13 @@ resource "azurerm_app_service_plan" "app_service_plan" {
 }
 
 resource "azurerm_app_service" "frontend_app_service" {
-    name                = "warOfHeroesFrontend"
+    name                = "warOfHeroes"
     location            = azurerm_resource_group.rg.location
     resource_group_name = azurerm_resource_group.rg.name
     app_service_plan_id = azurerm_app_service_plan.app_service_plan.id
     https_only = true
     site_config {
         windows_fx_version = "DOTNETCORE|3.1"
+        default_documents = ["index.html"]
     }
 }
