@@ -9,16 +9,21 @@ import { environment } from './../environments/environment';
 })
 export class HeroService {
 
+  private options =  {
+    headers: new HttpHeaders({
+      'Access-Control-Allow-Origin': '*',
+    })
+  }
   constructor(private http: HttpClient) { }
 
   heroesUrl = environment.heroesApiUrl;
 
   getHeroes(): Observable<Hero[]> {
-    return this.http.get<Hero[]>(this.heroesUrl);
+    return this.http.get<Hero[]>(this.heroesUrl, this.options);
   }
 
   getHeroesFromList(ids: number[]): Observable<Hero[]> {
-    return this.http.post<Hero[]>(this.heroesUrl + "/ids", { heroIds: ids });
+    return this.http.post<Hero[]>(this.heroesUrl + "/ids", { heroIds: ids }, this.options);
   }
   
 }
