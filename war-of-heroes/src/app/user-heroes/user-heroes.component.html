@@ -1,21 +1,52 @@
-<div class="container">
-  <div class="row">
-    <div class="col-3">
-      <h5>My Heroes</h5>
-
-      <ul class="heroes">
-        <li
-          *ngFor="let hero of heroes"
+<div class="inventory">
+  <h3>Your Heroes</h3>
+  <div
+    id="inventory-list"
+    cdkDropList
+    #inventoryList="cdkDropList"
+    cdkDropListOrientation="horizontal"
+    [cdkDropListConnectedTo]="deckList"
+    class="hero-list-inventory"
+    (cdkDropListDropped)="drop($event)"
+  >
+    <div
+      [class.selected]="hero === selectedHero"
+      (click)="onSelect(hero)"
+      *ngFor="let hero of heroesInventory"
+    >
+      <div class="drag-hero" cdkDrag>
+        <app-hero-card
+          class="hero-card"
           [class.selected]="hero === selectedHero"
-          (click)="onSelect(hero)"
-        >
-          <span class="badge">{{ hero.id }}</span> {{ hero.name }}
-        </li>
-      </ul>
+          [hero]="hero"
+        ></app-hero-card>
+      </div>
     </div>
-
-    <div class="col-9">
-      <app-hero-card [hero]="selectedHero"></app-hero-card>
+  </div>
+</div>
+<div class="deck">
+  <h3>Your Deck</h3>
+  <div
+    id="deck-list"
+    cdkDropList
+    #deckList="cdkDropList"
+    [cdkDropListConnectedTo]="inventoryList"
+    class="hero-list-deck"
+    (cdkDropListDropped)="drop($event)"
+  >
+    <div
+      [class.selected]="hero === selectedHero"
+      (click)="onSelect(hero)"
+      *ngFor="let hero of heroesDeck"
+    >
+      <div class="drag-hero" cdkDrag>
+        &nbsp;
+        <app-hero-card
+          class="hero-card"
+          [class.selected]="hero === selectedHero"
+          [hero]="hero"
+        ></app-hero-card>
+      </div>
     </div>
   </div>
 </div>

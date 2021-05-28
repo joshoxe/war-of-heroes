@@ -49,7 +49,6 @@ export class UserService {
   }
 
   getUserInventory() : Observable<number[]> {
-    console.log(localStorage.getItem("idToken"));
     const options = {
       headers: new HttpHeaders({
         'Access-Control-Allow-Origin': '*',
@@ -60,5 +59,18 @@ export class UserService {
 
     return this.http
       .get<number[]>(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/inventory`, options);
+  }
+
+  getUserDeck() : Observable<number[]> {
+    const options = {
+      headers: new HttpHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        Authorization: 'bearer ' + localStorage.getItem("idToken"),
+      }),
+    };
+
+    return this.http
+      .get<number[]>(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/deck`, options);
   }
 }

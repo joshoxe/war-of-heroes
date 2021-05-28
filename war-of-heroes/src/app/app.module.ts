@@ -11,6 +11,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AccessGuard } from './access-guard.guard';
 import { UserHeroesComponent } from './user-heroes/user-heroes.component';
 import { HeroCardComponent } from './hero-card/hero-card.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { HeroCardComponent } from './hero-card/hero-card.component';
     HttpClientModule,
     SocialLoginModule,
     FontAwesomeModule,
-    AppRoutingModule
+    AppRoutingModule,
+    DragDropModule
   ],
   providers: [
     {
