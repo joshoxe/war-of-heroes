@@ -27,6 +27,7 @@ export class UserService {
   constructor(private http: HttpClient) {}
 
   loginUser(user: SocialUser): void {
+    console.log("Logging user in");
     const options = {
       headers: new HttpHeaders({
         'Access-Control-Allow-Origin': '*',

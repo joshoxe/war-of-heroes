@@ -26,12 +26,11 @@ export class UserHeroesComponent implements OnInit {
     
     this.userService.getUserInventory().subscribe((ids) => {
       this.getHeroes(ids).subscribe((heroes) => this.heroesInventory = heroes);
-      console.log(this.heroesInventory)
     });
 
     this.userService.getUserDeck().subscribe((ids) => {
-      this.getHeroes(ids).subscribe((heroes) => this.heroesDeck == heroes);
-    })
+      this.getHeroes(ids).subscribe((heroes) => this.heroesDeck = heroes);
+    });
   }
   
   /**

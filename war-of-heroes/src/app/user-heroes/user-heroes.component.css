@@ -86,11 +86,9 @@ input {
 
 .inventory {
   float: left;
-  display: flex;
-  flex-wrap: wrap;
   max-width: 60rem;
-  overflow-y: auto;
-  overflow-x: hidden;
+  overflow-y: hidden;
+  overflow-x: auto;
 }
 
 .deck {
