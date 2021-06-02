@@ -12,6 +12,7 @@ import { AccessGuard } from './access-guard.guard';
 import { UserHeroesComponent } from './user-heroes/user-heroes.component';
 import { HeroCardComponent } from './hero-card/hero-card.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
+import {MatGridListModule} from '@angular/material/grid-list';
 
 @NgModule({
   declarations: [
@@ -27,7 +28,8 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
     SocialLoginModule,
     FontAwesomeModule,
     AppRoutingModule,
-    DragDropModule
+    DragDropModule,
+    MatGridListModule
   ],
   providers: [
     {

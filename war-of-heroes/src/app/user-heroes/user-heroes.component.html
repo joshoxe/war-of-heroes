@@ -1,6 +1,6 @@
 <div class="inventory">
   <h3>Your Heroes</h3>
-  <div
+  <mat-grid-list
     id="inventory-list"
     cdkDropList
     #inventoryList="cdkDropList"
@@ -9,7 +9,7 @@
     class="hero-list-inventory"
     (cdkDropListDropped)="drop($event)"
   >
-    <div
+    <mat-grid-tile
       [class.selected]="hero === selectedHero"
       (click)="onSelect(hero)"
       *ngFor="let hero of heroesInventory"
@@ -21,8 +21,8 @@
           [hero]="hero"
         ></app-hero-card>
       </div>
-    </div>
-  </div>
+    </mat-grid-tile>
+  </mat-grid-list>
 </div>
 <div class="deck">
   <h3>Your Deck</h3>
@@ -40,7 +40,6 @@
       *ngFor="let hero of heroesDeck"
     >
       <div class="drag-hero" cdkDrag>
-        &nbsp;
         <app-hero-card
           class="hero-card"
           [class.selected]="hero === selectedHero"

@@ -86,15 +86,17 @@ input {
 
 .inventory {
   float: left;
-  max-width: 70%;
-  overflow-x: hidden;
+  display: flex;
+  flex-wrap: wrap;
+  max-width: 60rem;
   overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .deck {
   float: right;
-  overflow-x: hidden;
-  overflow-y: auto;
+  position: sticky;
+  top: 20%;
 }
 
 .deck > h3 {
@@ -102,22 +104,21 @@ input {
 }
 
 .hero-list-inventory {
-  width: 1000px;
-  min-height: 20rem;
+  width: 60rem;
   display: flex;
   flex-direction: row;
 }
 
 .hero-list-deck {
   height: 100vh;
-  min-width: 18rem;
+  width: 20rem;
   display: flex;
   flex-direction: column;
   background: repeating-linear-gradient(
   45deg,
-  rgba(188, 96, 96, 0.4),
-  rgba(188, 96, 96, 0.4) 10px,
-  rgba(152, 70, 70, 0.4) 10px,
-  rgba(152, 70, 70, 0.4) 20px
+  rgba(255, 255, 255, 0.4),
+  rgba(255, 255, 255, 0.4) 10px,
+  rgba(152, 70, 70, 0.2) 10px,
+  rgba(152, 70, 70, 0.2) 20px
 );
 }
