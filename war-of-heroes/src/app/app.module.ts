@@ -12,7 +12,8 @@ import { AccessGuard } from './access-guard.guard';
 import { UserHeroesComponent } from './user-heroes/user-heroes.component';
 import { HeroCardComponent } from './hero-card/hero-card.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
-import {MatGridListModule} from '@angular/material/grid-list';
+import { GridsterModule } from 'angular-gridster2';
+import { CookieModule } from 'ngx-cookie';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,8 @@ import {MatGridListModule} from '@angular/material/grid-list';
     FontAwesomeModule,
     AppRoutingModule,
     DragDropModule,
-    MatGridListModule
+    GridsterModule,
+    CookieModule.forRoot()
   ],
   providers: [
     {

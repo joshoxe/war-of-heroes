@@ -5,4 +5,5 @@ export interface User {
     googleID: number;
     firstName: string;
     userHeroInventories: UserHero;
+    accessToken: string;
 }

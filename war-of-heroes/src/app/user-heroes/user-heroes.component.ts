@@ -46,7 +46,7 @@ export class UserHeroesComponent implements OnInit {
     this.selectedHero = hero;
   }
 
-  drop(event: CdkDragDrop<string[]>) {
+  async drop(event: CdkDragDrop<string[]>) {
     var currentContainer = event.container.id == "inventory-list" ? this.heroesInventory : this.heroesDeck;
     var previousContainer = event.previousContainer.id == "inventory-list" ? this.heroesInventory : this.heroesDeck;
 
@@ -60,8 +60,10 @@ export class UserHeroesComponent implements OnInit {
                         event.currentIndex);
 
       // Since a card is being transferred, update the API models
-      this.userService.updateUserDeck(this.heroesDeck.map(h => h.id)).subscribe();
-      this.userService.updateUserInventory(this.heroesInventory.map(h => h.id)).subscribe();
+      console.log(this.heroesDeck.map(h => h.id))
+      console.log(this.heroesInventory.map(h => h.id))
+      await this.userService.updateUserDeck(this.heroesDeck.map(h => h.id));
+      await this.userService.updateUserInventory(this.heroesInventory.map(h => h.id));
     }
   }
 }

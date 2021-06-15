@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
+import { CookieService } from 'ngx-cookie';
 import { UserService } from './user.service';
 
 @Component({
@@ -8,7 +9,16 @@ import { UserService } from './user.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(private userService: UserService) {
+  constructor(private userService: UserService, router: Router, private cookieService: CookieService) {
+
+    // Subscribe to router events in order to check the user's auth token
+    // and keep them signed in or out if the token is valid or not
+    router.events.subscribe(async event => {
+      if (event instanceof NavigationEnd) {
+        await this.userService.refreshAuth(cookieService.get("accessToken"));
+      }
+    });
+
   }
   title = 'War of Heroes';
 
@@ -24,3 +34,4 @@ export class AppComponent {
     return this.userService.getUserFirstName();
   }
 }
+

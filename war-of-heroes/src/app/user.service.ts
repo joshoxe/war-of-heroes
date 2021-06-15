@@ -2,10 +2,10 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { SocialUser } from 'angularx-social-login';
 import { Observable, throwError } from 'rxjs';
-import {catchError, map } from 'rxjs/operators';
-import { Hero } from './hero';
+import { catchError } from 'rxjs/operators';
 import { User } from './user';
 import { environment } from './../environments/environment';
+import { CookieOptions, CookieService } from 'ngx-cookie';
 
 @Injectable({
   providedIn: 'root',
@@ -14,58 +14,83 @@ export class UserService {
   private userUrl = environment.userApiUrl;
   private usersEndpoint = 'user';
   private user: User;
-  private options = {
-    headers: new HttpHeaders({
-      'Access-Control-Allow-Origin': '*',
-      'Content-Type': 'application/json',
-      Authorization: 'bearer ' + localStorage.getItem("idToken"),
-    }),
+  private cookieOptions: CookieOptions = {
+    secure: true,
+    sameSite: 'strict',
+    httpOnly: true,
   };
 
+
   signedIn: boolean;
+  requestOptions: { headers: HttpHeaders; };
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private cookieService: CookieService) {
+    this.requestOptions = {
+      headers: new HttpHeaders({
+        'Access-Control-Allow-Origin': '*',
+        'Content-Type': 'application/json',
+        Authorization: 'bearer ' + this.cookieService.get('jwtToken'),
+      }),
+    };
+  }
 
-  loginUser(user: SocialUser): void {
-    console.log("Logging user in");
+  loginUser(googleUser: SocialUser): void {
+    console.log('Logging user in');
     const options = {
       headers: new HttpHeaders({
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        Authorization: 'bearer ' + user.idToken,
+        Authorization: 'bearer ' + googleUser.idToken,
       }),
     };
 
     this.http
-      .post<User>(`${this.userUrl}/${this.usersEndpoint}/login`, user, options)
+      .post<User>(
+        `${this.userUrl}/${this.usersEndpoint}/login`,
+        googleUser,
+        options
+      )
       .subscribe((user) => {
         this.user = user;
-        this.signedIn = (this.user != null);
+        this.cookieService.put(
+          'accessToken',
+          user.accessToken,
+          this.cookieOptions
+        );
       });
 
-      localStorage.setItem("idToken", user.idToken);
+    var date: Date = new Date();
+    date.setDate(date.getDate() + 1);
+    this.cookieOptions.expires = date;
+
+    this.cookieService.put('jwtToken', googleUser.idToken, this.cookieOptions);
+
   }
 
   isSignedIn(): boolean {
-    return (this.user != null);
+    return this.user != null;
   }
 
   getUserFirstName(): string {
     if (!this.isSignedIn()) {
-      return "";
+      return '';
     }
 
     return this.user.firstName;
   }
 
-  getUserInventory() : Observable<number[]> {
-    return this.http
-      .get<number[]>(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/inventory`, this.options);
+  getUserInventory(): Observable<number[]> {
+    return this.http.get<number[]>(
+      `${this.userUrl}/${this.usersEndpoint}/${this.user.id}/inventory`,
+      this.requestOptions
+    );
   }
 
-  getUserDeck() : Observable<number[]> {
-    return this.http
-      .get<number[]>(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/deck`, this.options);
+  getUserDeck(): Observable<number[]> {
+    return this.http.get<number[]>(
+      `${this.userUrl}/${this.usersEndpoint}/${this.user.id}/deck`,
+      this.requestOptions
+    );
   }
 
   /**
@@ -73,13 +98,19 @@ export class UserService {
    * @param deck a list of numbers representing card IDs in a user's deck
    * @returns an observable of type any to allow for error handling
    */
-  updateUserDeck(deck: number[]) : Observable<any> {
-    console.log("Updating user deck")
-    return this.http.post<number[]>(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/deck/update`, deck, this.options).pipe(
-      catchError((e: any) => {
-        return throwError(e);
-      })
-    );
+  async updateUserDeck(deck: number[]): Promise<any> {
+    return this.http
+      .post<number[]>(
+        `${this.userUrl}/${this.usersEndpoint}/${this.user.id}/deck/update`,
+        deck,
+        this.requestOptions
+      )
+      .pipe(
+        catchError((e: any) => {
+          return throwError(e);
+        })
+      )
+      .toPromise();
   }
 
   /**
@@ -87,11 +118,38 @@ export class UserService {
    * @param inventory a list of numbers representing card IDs in a user's inventory
    * @returns an observable of type any to allow for error handling
    */
-  updateUserInventory(inventory: number[]) : Observable<any> {
-    return this.http.post(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/inventory/update`, inventory, this.options).pipe(
-      catchError((e: any) => {
-        return throwError(e);
-      })
-    );
+  async updateUserInventory(inventory: number[]): Promise<any> {
+    return this.http
+      .post(
+        `${this.userUrl}/${this.usersEndpoint}/${this.user.id}/inventory/update`,
+        inventory,
+        this.requestOptions
+      )
+      .pipe(
+        catchError((e: any) => {
+          return throwError(e);
+        })
+      )
+      .toPromise();
+  }
+
+  async refreshAuth(accessToken: string): Promise<void> {
+    var requestBody = { accessToken: accessToken };
+
+    this.http
+      .post<User>(
+        `${this.userUrl}/${this.usersEndpoint}/refresh`,
+        requestBody,
+        this.requestOptions
+      )
+      .pipe(
+        catchError((e: any) => {
+          this.user = null;
+          return throwError(e);
+        })
+      )
+      .subscribe((user) => {
+        this.user = user;
+      });
   }
 }
