@@ -7,6 +7,10 @@ import { User } from './user';
 import { environment } from './../environments/environment';
 import { CookieOptions, CookieService } from 'ngx-cookie';
 
+const COOKIE_EXPIRATION_DAYS = 1;
+const ACCESS_TOKEN_COOKIE_NAME = 'accessToken';
+const JWT_TOKEN_COOKIE_NAME = 'jwtToken';
+
 @Injectable({
   providedIn: 'root',
 })
@@ -20,22 +24,22 @@ export class UserService {
     httpOnly: true,
   };
 
-
   signedIn: boolean;
-  requestOptions: { headers: HttpHeaders; };
+  requestOptions: { headers: HttpHeaders };
 
   constructor(private http: HttpClient, private cookieService: CookieService) {
     this.requestOptions = {
       headers: new HttpHeaders({
         'Access-Control-Allow-Origin': '*',
         'Content-Type': 'application/json',
-        Authorization: 'bearer ' + this.cookieService.get('jwtToken'),
+        Authorization: 'bearer ' + this.cookieService.get(JWT_TOKEN_COOKIE_NAME),
       }),
     };
   }
 
   loginUser(googleUser: SocialUser): void {
-    console.log('Logging user in');
+    this.cookieOptions.expires = this.getTomorrowDate();
+
     const options = {
       headers: new HttpHeaders({
         'Access-Control-Allow-Origin': '*',
@@ -52,19 +56,24 @@ export class UserService {
       )
       .subscribe((user) => {
         this.user = user;
+
         this.cookieService.put(
-          'accessToken',
+          ACCESS_TOKEN_COOKIE_NAME,
           user.accessToken,
           this.cookieOptions
         );
+        this.cookieService.put(
+          JWT_TOKEN_COOKIE_NAME,
+          googleUser.idToken,
+          this.cookieOptions
+        );
       });
+  }
 
+  private getTomorrowDate() {
     var date: Date = new Date();
-    date.setDate(date.getDate() + 1);
-    this.cookieOptions.expires = date;
-
-    this.cookieService.put('jwtToken', googleUser.idToken, this.cookieOptions);
-
+    date.setDate(date.getDate() + COOKIE_EXPIRATION_DAYS);
+    return date;
   }
 
   isSignedIn(): boolean {
@@ -133,8 +142,8 @@ export class UserService {
       .toPromise();
   }
 
-  async refreshAuth(accessToken: string): Promise<void> {
-    var requestBody = { accessToken: accessToken };
+  async refreshAuth(): Promise<void> {
+    var requestBody = { accessToken: this.cookieService.get('accessToken') };
 
     this.http
       .post<User>(

@@ -15,7 +15,7 @@ export class AppComponent {
     // and keep them signed in or out if the token is valid or not
     router.events.subscribe(async event => {
       if (event instanceof NavigationEnd) {
-        await this.userService.refreshAuth(cookieService.get("accessToken"));
+        await this.userService.refreshAuth();
       }
     });
 
@@ -23,7 +23,7 @@ export class AppComponent {
   title = 'War of Heroes';
 
   isSignedIn(): boolean {
-    return this.userService.signedIn;
+    return this.userService.isSignedIn();
   }
 
   getUserName(): string {
