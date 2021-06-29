@@ -9,7 +9,7 @@ import { UserService } from './user.service';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  constructor(private userService: UserService, router: Router, private cookieService: CookieService) {
+  constructor(private userService: UserService, private router: Router, private cookieService: CookieService) {
 
     // Subscribe to router events in order to check the user's auth token
     // and keep them signed in or out if the token is valid or not
@@ -32,6 +32,12 @@ export class AppComponent {
     }
 
     return this.userService.getUserFirstName();
+  }
+
+  async logout(): Promise<void> {
+    await this.userService.logout();
+
+    this.router.navigate(['/']);
   }
 }
 

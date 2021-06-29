@@ -21,7 +21,7 @@ export class UserService {
   private cookieOptions: CookieOptions = {
     secure: true,
     sameSite: 'strict',
-    httpOnly: true,
+    httpOnly: false, // TODO: Set this to true after debugging
   };
 
   signedIn: boolean;
@@ -38,7 +38,7 @@ export class UserService {
   }
 
   loginUser(googleUser: SocialUser): void {
-    this.cookieOptions.expires = this.getTomorrowDate();
+    this.cookieOptions.expires = this.getCookieExpirationDate();
 
     const options = {
       headers: new HttpHeaders({
@@ -57,6 +57,7 @@ export class UserService {
       .subscribe((user) => {
         this.user = user;
 
+
         this.cookieService.put(
           ACCESS_TOKEN_COOKIE_NAME,
           user.accessToken,
@@ -67,10 +68,13 @@ export class UserService {
           googleUser.idToken,
           this.cookieOptions
         );
+
+        console.log(this.cookieService.get(JWT_TOKEN_COOKIE_NAME), this.cookieService.get(ACCESS_TOKEN_COOKIE_NAME));
+
       });
   }
 
-  private getTomorrowDate() {
+  private getCookieExpirationDate() {
     var date: Date = new Date();
     date.setDate(date.getDate() + COOKIE_EXPIRATION_DAYS);
     return date;
@@ -142,8 +146,18 @@ export class UserService {
       .toPromise();
   }
 
+  private getAccessToken(): object {
+    var accessToken = this.cookieService.get(ACCESS_TOKEN_COOKIE_NAME)
+
+    if (accessToken == null) {
+      accessToken = "";
+    }
+
+    return { accessToken: accessToken };
+  }
+
   async refreshAuth(): Promise<void> {
-    var requestBody = { accessToken: this.cookieService.get('accessToken') };
+    var requestBody = this.getAccessToken();
 
     this.http
       .post<User>(
@@ -160,5 +174,18 @@ export class UserService {
       .subscribe((user) => {
         this.user = user;
       });
+  }
+
+  async logout(): Promise<void> {
+    var requestBody = this.getAccessToken();
+    this.http.post(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/logout`, requestBody, this.requestOptions).pipe(
+       catchError((e: any) => {
+         return throwError(e);
+       })
+    ).subscribe(() => {
+      this.user = null;
+      this.cookieService.remove(JWT_TOKEN_COOKIE_NAME);
+      this.cookieService.remove(ACCESS_TOKEN_COOKIE_NAME);
+    });
   }
 }
