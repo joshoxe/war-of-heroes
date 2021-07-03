@@ -1,4 +1,3 @@
-import { CdkDragDrop, moveItemInArray, transferArrayItem } from '@angular/cdk/drag-drop';
 import { Component, OnInit } from '@angular/core';
 import { Observable } from 'rxjs';
 import { Hero } from '../hero';
@@ -46,24 +45,29 @@ export class UserHeroesComponent implements OnInit {
     this.selectedHero = hero;
   }
 
-  async drop(event: CdkDragDrop<string[]>) {
-    var currentContainer = event.container.id == "inventory-list" ? this.heroesInventory : this.heroesDeck;
-    var previousContainer = event.previousContainer.id == "inventory-list" ? this.heroesInventory : this.heroesDeck;
+  async transferToDeckFromInventory(hero: Hero): Promise<void> {
+      if (!this.heroesInventory.includes(hero)) {
+        return;
+      }
 
-    if (event.previousContainer === event.container) {
-      moveItemInArray(currentContainer, event.previousIndex, event.currentIndex);
-      // Currently no implementation to update API model for index changes in a list
-    } else {
-      transferArrayItem(previousContainer,
-                        currentContainer,
-                        event.previousIndex,
-                        event.currentIndex);
+      this.heroesInventory.splice(this.heroesInventory.indexOf(hero), 1);
+      this.heroesDeck.push(hero);
 
       // Since a card is being transferred, update the API models
-      console.log(this.heroesDeck.map(h => h.id))
-      console.log(this.heroesInventory.map(h => h.id))
       await this.userService.updateUserDeck(this.heroesDeck.map(h => h.id));
       await this.userService.updateUserInventory(this.heroesInventory.map(h => h.id));
+  }
+
+  async transferToInventoryFromDeck(hero: Hero) {
+    if (!this.heroesDeck.includes(hero)) {
+      return;
     }
+
+    this.heroesDeck.splice(this.heroesDeck.indexOf(hero), 1);
+    this.heroesInventory.push(hero);
+
+    // Since a card is being transferred, update the API models
+    await this.userService.updateUserDeck(this.heroesDeck.map(h => h.id));
+    await this.userService.updateUserInventory(this.heroesInventory.map(h => h.id));
   }
 }

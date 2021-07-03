@@ -2,47 +2,40 @@
   <h3>Your Heroes</h3>
   <div
     id="inventory-list"
-    cdkDropList
-    #inventoryList="cdkDropList"
-    cdkDropListOrientation="horizontal"
-    [cdkDropListConnectedTo]="deckList"
-    class="hero-list-inventory"
-    (cdkDropListDropped)="drop($event)"
-  >
+    class="hero-list-inventory">
     <div
       [class.selected]="hero === selectedHero"
       (click)="onSelect(hero)"  
       *ngFor="let hero of heroesInventory"
     >
-      <div class="drag-hero" cdkDrag>
+      <div>
         <app-hero-card
           class="hero-card"
           [class.selected]="hero === selectedHero"
           [hero]="hero"
         ></app-hero-card>
+        <button type="button" class="btn btn-primary" (click)="transferToDeckFromInventory(hero)">Add to deck</button>
       </div>
     </div>
   </div>
 </div>
+
 <div class="deck">
   <h3>Your Deck</h3>
   <div
     id="deck-list"
-    cdkDropList
-    #deckList="cdkDropList"
-    [cdkDropListConnectedTo]="inventoryList"
     class="hero-list-deck"
-    (cdkDropListDropped)="drop($event)"
   >
     <div
 
       *ngFor="let deckHero of heroesDeck"
     >
-      <div class="drag-hero" cdkDrag>
+      <div class="drag-hero">
         <app-hero-card
           class="hero-card"
           [hero]="deckHero"
         ></app-hero-card>
+        <button type="button" class="btn btn-primary" (click)="transferToInventoryFromDeck(deckHero)">Remove from deck</button>
       </div>
     </div>
   </div>
