@@ -14,6 +14,7 @@ import { HeroCardComponent } from './hero-card/hero-card.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { GridsterModule } from 'angular-gridster2';
 import { CookieModule } from 'ngx-cookie';
+import { BattleMatchmakingComponent } from './battle-matchmaking/battle-matchmaking.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +22,8 @@ import { CookieModule } from 'ngx-cookie';
     LoginComponent,
     DashboardComponent,
     UserHeroesComponent,
-    HeroCardComponent
+    HeroCardComponent,
+    BattleMatchmakingComponent
   ],
   imports: [
     BrowserModule,

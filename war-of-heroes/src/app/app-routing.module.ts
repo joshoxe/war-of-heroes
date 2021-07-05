@@ -4,6 +4,7 @@ import { Router, RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AccessGuard } from './access-guard.guard';
+import { BattleMatchmakingComponent } from './battle-matchmaking/battle-matchmaking.component';
 
 const routes: Routes = [
   {
@@ -16,6 +17,12 @@ const routes: Routes = [
     data: {requiresLogin: true},
     canActivate: [ AccessGuard ]
   },
+  {
+    path: 'battle',
+    component: BattleMatchmakingComponent,
+    data: {requiresLogin: true},
+    canActivate: [ AccessGuard ]
+  }
 ];
 
 @NgModule({
