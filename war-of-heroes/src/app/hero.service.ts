@@ -3,6 +3,7 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { Hero } from './hero';
 import { environment } from './../environments/environment';
+import { UserService } from './user.service';
 
 @Injectable({
   providedIn: 'root'
@@ -14,7 +15,7 @@ export class HeroService {
       'Access-Control-Allow-Origin': '*',
     })
   }
-  constructor(private http: HttpClient) { }
+  constructor(private http: HttpClient, private userService: UserService) { }
 
   heroesUrl = environment.heroesApiUrl;
 

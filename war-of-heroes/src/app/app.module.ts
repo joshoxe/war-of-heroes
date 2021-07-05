@@ -11,6 +11,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AccessGuard } from './access-guard.guard';
 import { UserHeroesComponent } from './user-heroes/user-heroes.component';
 import { HeroCardComponent } from './hero-card/hero-card.component';
+import {DragDropModule} from '@angular/cdk/drag-drop';
+import { GridsterModule } from 'angular-gridster2';
+import { CookieModule } from 'ngx-cookie';
 
 @NgModule({
   declarations: [
@@ -25,7 +28,10 @@ import { HeroCardComponent } from './hero-card/hero-card.component';
     HttpClientModule,
     SocialLoginModule,
     FontAwesomeModule,
-    AppRoutingModule
+    AppRoutingModule,
+    DragDropModule,
+    GridsterModule,
+    CookieModule.forRoot()
   ],
   providers: [
     {
