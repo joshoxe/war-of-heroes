@@ -45,5 +45,6 @@ resource "azurerm_app_service" "frontend_app_service" {
     site_config {
         windows_fx_version = "DOTNETCORE|3.1"
         default_documents = ["index.html"]
+        use_32_bit_worker_process = true
     }
 }
