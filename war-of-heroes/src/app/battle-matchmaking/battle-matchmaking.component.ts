@@ -9,6 +9,8 @@ import { io }from 'socket.io-client';
 })
 export class BattleMatchmakingComponent implements OnInit {
   private socket;
+  public gameReady: boolean = false;
+  public text: string;
 
   constructor() { }
 
@@ -21,13 +23,18 @@ export class BattleMatchmakingComponent implements OnInit {
     this.socket.onAny((eventName, data) => {
       console.log("Received event: ", eventName);
 
-      if (eventName == "MATCHMAKE") {
+      if (eventName == "matchmaking") {
         console.log("Event was a matchmaking request, sending name");
-        this.socket.emit("MATCHMAKE", "TestName");
+        this.socket.emit("matchmaking", ["TestName", [1,2,3,4]]);
       }
 
-      if (eventName == "JOIN") {
-        console.log("Event was a JOIN event");
+      if (eventName == "ready") {
+        this.gameReady = true;
+        this.text = data;
+      }
+
+      if (eventName == "message"){
+        console.log(data);
       }
     })
   }
