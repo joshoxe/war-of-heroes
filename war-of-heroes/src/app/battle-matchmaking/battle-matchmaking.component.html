@@ -1,1 +1,5 @@
 <button (click)="connect()">Play</button>
+
+<div *ngIf="this.gameReady">
+    Matchmaking finished! It's {{ this.text }}!
+</div>
