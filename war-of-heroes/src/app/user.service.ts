@@ -188,4 +188,12 @@ export class UserService {
       this.cookieService.remove(ACCESS_TOKEN_COOKIE_NAME);
     });
   }
+
+  public getUserAccessToken(): string {
+    return this.cookieService.get(ACCESS_TOKEN_COOKIE_NAME);
+  }
+
+  public getUserJwtToken(): string {
+    return this.cookieService.get(JWT_TOKEN_COOKIE_NAME);
+  }
 }
