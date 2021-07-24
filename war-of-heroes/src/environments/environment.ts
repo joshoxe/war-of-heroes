@@ -5,7 +5,8 @@
 export const environment = {
   production: false,
   userApiUrl : 'https://localhost:44328',
-  heroesApiUrl: 'https://localhost:44398/hero'
+  heroesApiUrl: 'https://localhost:44398/hero',
+  gameServerUrl: 'http://localhost:3000'
 };
 
 /*
