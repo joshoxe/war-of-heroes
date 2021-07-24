@@ -31,8 +31,8 @@ resource "azurerm_app_service_plan" "app_service_plan" {
     resource_group_name = azurerm_resource_group.rg.name
 
     sku {
-        tier = "Standard"
-        size = "S1"
+        tier = "Shared"
+        size = "D1"
     }
 }
 
@@ -45,5 +45,6 @@ resource "azurerm_app_service" "frontend_app_service" {
     site_config {
         windows_fx_version = "DOTNETCORE|3.1"
         default_documents = ["index.html"]
+        use_32_bit_worker_process = true
     }
 }
