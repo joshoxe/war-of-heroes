@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { io }from 'socket.io-client';
 import { UserService } from '../user.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-battle-matchmaking',
@@ -25,7 +26,7 @@ export class BattleMatchmakingComponent implements OnInit {
     this.gameOver = false;
     this.gameReady = false;
     this.matchmakingInProgress = true;
-    this.socket = io("http://localhost:3000");
+    this.socket = io(environment.gameServerUrl);
 
     this.socket.onAny((eventName, data) => {
 
