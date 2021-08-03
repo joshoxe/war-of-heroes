@@ -19,8 +19,8 @@
       </div>
 
       <div *ngIf="this.gameOver && !this.matchmakingInProgress">
-          <h2 *ngIf="this.winner">You clicked first! You won!</h2>
-          <h2 *ngIf="!this.winner">Your opponent clicked first! You lost!</h2>
+          <h2 *ngIf="this.winner">You clicked first! You won! You won 50 coins!</h2>
+          <h2 *ngIf="!this.winner">Your opponent clicked first! You lost! You got 5 coins for your efforts</h2>
           <img src={{this.image}}/>
       </div>
     </div>
