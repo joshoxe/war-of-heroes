@@ -68,9 +68,6 @@ export class UserService {
           googleUser.idToken,
           this.cookieOptions
         );
-
-        console.log(this.cookieService.get(JWT_TOKEN_COOKIE_NAME), this.cookieService.get(ACCESS_TOKEN_COOKIE_NAME));
-
       });
   }
 
@@ -82,6 +79,14 @@ export class UserService {
 
   isSignedIn(): boolean {
     return this.user != null;
+  }
+
+  getUserId(): number  | string{
+    if (!this.isSignedIn()) {
+      return '';
+    }
+
+    return this.user.id;
   }
 
   getUserFirstName(): string {
@@ -106,6 +111,29 @@ export class UserService {
     );
   }
 
+  getUserWins(): number {
+    if (!this.isSignedIn()) {
+      return -1;
+    }
+
+    return this.user.wins;
+  }
+
+  getUserLosses(): number {
+    if (!this.isSignedIn()) {
+      return -1;
+    }
+
+    return this.user.losses;
+  }
+
+  getUserCoins(): number {
+    if (!this.isSignedIn()) {
+      return -1;
+    }
+
+    return this.user.coins;
+  }
   /**
    * Replaces a user's entire deck in the API data model with the `deck` provided
    * @param deck a list of numbers representing card IDs in a user's deck

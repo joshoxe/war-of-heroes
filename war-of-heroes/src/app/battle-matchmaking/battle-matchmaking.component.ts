@@ -32,9 +32,10 @@ export class BattleMatchmakingComponent implements OnInit {
 
       if (eventName == "matchmaking") {
         const name = this.userService.getUserFirstName();
+        const id = this.userService.getUserId();
         this.userService.getUserDeck().subscribe((ids) => {
           // Pass the auth tokens so the server can call API endpoints for user data
-          this.socket.emit("matchmaking", [name, this.userService.getUserJwtToken(), this.userService.getUserAccessToken()]);
+          this.socket.emit("matchmaking", [id, name, this.userService.getUserJwtToken(), this.userService.getUserAccessToken()]);
         });
       }
 

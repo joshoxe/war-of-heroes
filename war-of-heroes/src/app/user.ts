@@ -6,4 +6,7 @@ export interface User {
     firstName: string;
     userHeroInventories: UserHero;
     accessToken: string;
+    coins: number;
+    wins: number;
+    losses: number;
 }

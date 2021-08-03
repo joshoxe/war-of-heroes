@@ -30,6 +30,22 @@
     </ul>
     <ul class="navbar-nav user-menu">
 
+      <div class="row"  *ngIf="this.isSignedIn()"> 
+        <fa-icon [icon]="faCoins" size="2x" class="coins icon"></fa-icon>
+      
+        <div class="text">
+          <p class="title">Coins</p>
+          <p class="value">{{ this.getUserCoins() }} </p>
+        </div>
+
+        <fa-icon [icon]="faGamepad" size="2x" class="gamepad icon"></fa-icon>
+        <div class="text">
+          <p class="title">Record</p>
+          <p class="value">{{ this.getUserWins() }} - {{ this.getUserLosses() }} </p>
+        </div>
+        
+      </div>
+
       <li class="nav-item dropdown" *ngIf="this.isSignedIn()">
         <a
           class="nav-link dropdown-toggle"
