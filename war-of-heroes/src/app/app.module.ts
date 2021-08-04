@@ -15,6 +15,7 @@ import {DragDropModule} from '@angular/cdk/drag-drop';
 import { GridsterModule } from 'angular-gridster2';
 import { CookieModule } from 'ngx-cookie';
 import { BattleMatchmakingComponent } from './battle-matchmaking/battle-matchmaking.component';
+import { BattleGameComponent } from './battle-game/battle-game.component';
 
 @NgModule({
   declarations: [
@@ -23,7 +24,8 @@ import { BattleMatchmakingComponent } from './battle-matchmaking/battle-matchmak
     DashboardComponent,
     UserHeroesComponent,
     HeroCardComponent,
-    BattleMatchmakingComponent
+    BattleMatchmakingComponent,
+    BattleGameComponent
   ],
   imports: [
     BrowserModule,
