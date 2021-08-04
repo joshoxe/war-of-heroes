@@ -5,6 +5,7 @@ import { LoginComponent } from './login/login.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { AccessGuard } from './access-guard.guard';
 import { BattleMatchmakingComponent } from './battle-matchmaking/battle-matchmaking.component';
+import { BattleGameComponent } from './battle-game/battle-game.component';
 
 const routes: Routes = [
   {
@@ -20,6 +21,12 @@ const routes: Routes = [
   {
     path: 'battle',
     component: BattleMatchmakingComponent,
+    data: {requiresLogin: true},
+    canActivate: [ AccessGuard ]
+  },
+  {
+    path: 'battle-game',
+    component: BattleGameComponent,
     data: {requiresLogin: true},
     canActivate: [ AccessGuard ]
   }

@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { io }from 'socket.io-client';
 import { UserService } from '../user.service';
 import { environment } from 'src/environments/environment';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-battle-matchmaking',
@@ -17,7 +18,7 @@ export class BattleMatchmakingComponent implements OnInit {
   public winner: boolean;
   public image: string = "";
 
-  constructor(private userService: UserService) { }
+  constructor(private userService: UserService, private router: Router) { }
 
   ngOnInit(): void {
   }
@@ -42,6 +43,8 @@ export class BattleMatchmakingComponent implements OnInit {
       if (eventName == "ready") {
         this.gameReady = true;
         this.matchmakingInProgress = false;
+
+        this.router.navigate(['battle-game']);
       }
 
       if (eventName == "message"){

@@ -5,9 +5,15 @@
   <title>WarOfHeroes</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script src="assets/phaser.min.js"></script>
   <link rel="icon" type="image/x-icon" href="favicon.ico">
 </head>
 <body>
   <app-root></app-root>
+  <script>
+    if (global === undefined) {
+      var global = window;
+    }
+  </script>
 </body>
 </html>
