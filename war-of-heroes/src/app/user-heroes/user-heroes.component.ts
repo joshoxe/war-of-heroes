@@ -13,13 +13,16 @@ import { UserService } from '../user.service';
 export class UserHeroesComponent implements OnInit {
 
   constructor(private heroService: HeroService, private userService: UserService) {}
+  ngOnInit(): void {
+    throw new Error('Method not implemented.');
+  }
 
   heroesInventory: Hero[];
   heroesDeck: Hero[];
   selectedHero?: Hero;
   user: User;
 
-  ngOnInit(): void {
+  ngAfterViewInit(): void {
     this.heroesInventory = [];
     this.heroesDeck = [];
     

@@ -16,6 +16,7 @@ import { GridsterModule } from 'angular-gridster2';
 import { CookieModule } from 'ngx-cookie';
 import { BattleMatchmakingComponent } from './battle-matchmaking/battle-matchmaking.component';
 import { BattleGameComponent } from './battle-game/battle-game.component';
+import { HomeComponent } from './home/home.component';
 
 @NgModule({
   declarations: [
@@ -25,7 +26,8 @@ import { BattleGameComponent } from './battle-game/battle-game.component';
     UserHeroesComponent,
     HeroCardComponent,
     BattleMatchmakingComponent,
-    BattleGameComponent
+    BattleGameComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,

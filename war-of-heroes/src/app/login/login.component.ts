@@ -43,7 +43,7 @@ export class LoginComponent implements OnInit {
 
       this.googleUser = user;
       this.loginUser();
-      this.router.navigate(['..']);
+      this.router.navigate(['']);
     });
   }
 

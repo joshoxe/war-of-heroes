@@ -1,5 +1,5 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-  <a class="navbar-brand" href="#">War of Heroes</a>
+<nav *ngIf="this.isSignedIn()" class="navbar navbar-expand-lg navbar-custom">
+  <a class="navbar-brand navbar-title" href="#">War of Heroes</a>
 
   <button
     class="navbar-toggler"
@@ -15,17 +15,7 @@
 
   <div class="collapse navbar-collapse" id="navbarSupportedContent">
     <ul class="navbar-nav mr-auto">
-      <li class="nav-item active" *ngIf="this.isSignedIn()">
-        <a class="nav-link" routerLink="/dashboard" routerLinkActive="active"
-          >Dashboard</a
-        >
-      </li>
 
-      <li class="nav-item active" *ngIf="this.isSignedIn()">
-        <a class="nav-link" routerLink="/battle" routerLinkActive="active"
-          >Play</a
-        >
-      </li>
 
     </ul>
     <ul class="navbar-nav user-menu">
@@ -59,21 +49,11 @@
         >
 
         <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-          <a class="dropdown-item">Account</a>
-          <div class="dropdown-divider"></div>
           <a class="dropdown-item" (click)="logout()">Logout</a>
         </div>
       </li>
     </ul>
   </div>
 </nav>
-<div class="d-flex flex-column align-items-center" *ngIf="!this.isSignedIn()">
-  <div>
-  <h1 class="landing">War Of Heroes</h1>
-  </div>
-  <div>
-  <app-login></app-login>
-  </div>
-</div>
 
 <router-outlet></router-outlet>

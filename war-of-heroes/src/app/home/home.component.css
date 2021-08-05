@@ -1,0 +1,53 @@
+.menu > ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.welcome-text {
+    font-family: 'Metal Mania', cursive;
+    text-align: center;
+    background: -webkit-linear-gradient(#24d5dc, #5589e8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 3rem;
+}
+
+.menu {
+    text-align: center;
+    margin-top: 10%;
+}
+
+.menu ul a {
+    font-family: 'Metal Mania', cursive;
+    background: -webkit-linear-gradient(#24d5dc, #5589e8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 4rem;
+    padding: 1%;
+    white-space: nowrap;
+}
+
+.menu > ul li {
+    background-color: #0f1f3498;
+    margin-bottom: 2%;
+    border-radius: 5%;
+    padding: 2%;
+}
+
+.menu > ul li:hover {
+    cursor: pointer;
+    background-color: #0f1f34;
+    transition: background-color 0.5s;
+}
+
+.menu > a {
+    text-decoration: none;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}

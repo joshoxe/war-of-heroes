@@ -6,6 +6,7 @@ import { catchError } from 'rxjs/operators';
 import { User } from './user';
 import { environment } from './../environments/environment';
 import { CookieOptions, CookieService } from 'ngx-cookie';
+import { Router } from '@angular/router';
 
 const COOKIE_EXPIRATION_DAYS = 1;
 const ACCESS_TOKEN_COOKIE_NAME = 'accessToken';
@@ -27,7 +28,7 @@ export class UserService {
   signedIn: boolean;
   requestOptions: { headers: HttpHeaders };
 
-  constructor(private http: HttpClient, private cookieService: CookieService) {
+  constructor(private http: HttpClient, private cookieService: CookieService, private router: Router) {
     this.requestOptions = {
       headers: new HttpHeaders({
         'Access-Control-Allow-Origin': '*',
@@ -184,24 +185,28 @@ export class UserService {
     return { accessToken: accessToken };
   }
 
-  async refreshAuth(): Promise<void> {
+  refreshAuth(): Observable<User> {
     var requestBody = this.getAccessToken();
 
-    this.http
+    if (!this.cookieService.get(JWT_TOKEN_COOKIE_NAME)|| !this.cookieService.get(ACCESS_TOKEN_COOKIE_NAME)) {
+      console.log("Cookies not defined");
+      return throwError("No cookie");
+    }
+
+    return this.http
       .post<User>(
         `${this.userUrl}/${this.usersEndpoint}/refresh`,
         requestBody,
         this.requestOptions
-      )
-      .pipe(
-        catchError((e: any) => {
-          this.user = null;
-          return throwError(e);
-        })
-      )
-      .subscribe((user) => {
-        this.user = user;
-      });
+      ).pipe(catchError((err) => {
+        this.user = null;
+        throw throwError(err);
+      }));
+  }
+
+  setUser(user: User) {
+    console.log(user);
+    this.user = user;
   }
 
   async logout(): Promise<void> {
