@@ -6,11 +6,23 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AccessGuard } from './access-guard.guard';
 import { BattleMatchmakingComponent } from './battle-matchmaking/battle-matchmaking.component';
 import { BattleGameComponent } from './battle-game/battle-game.component';
+import { HomeComponent } from './home/home.component';
 
 const routes: Routes = [
   {
     path: 'login',
     component: LoginComponent,
+  },
+  {
+    path: 'home',
+    component: HomeComponent,
+    data: {requiresLogin: true},
+    canActivate: [ AccessGuard ]
+  },
+  {
+    path: '',
+    redirectTo: 'home',
+    pathMatch: 'full',
   },
   {
     path: 'dashboard',

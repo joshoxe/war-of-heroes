@@ -1,0 +1,15 @@
+h1 {
+    min-width: fit-content;
+    font-family: 'Metal Mania', cursive;
+    background: -webkit-linear-gradient(#24d5dc, #5589e8);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 6rem;
+    padding: 3%;
+    white-space: nowrap;
+    margin-top: 50%;
+    margin-bottom: 5%;
+    border-radius: 5%;
+    background-color: #0f1f34;
+}

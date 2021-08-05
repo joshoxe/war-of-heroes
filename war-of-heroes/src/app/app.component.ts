@@ -18,11 +18,11 @@ export class AppComponent {
   constructor(private userService: UserService, private router: Router, private cookieService: CookieService) {
     // Subscribe to router events in order to check the user's auth token
     // and keep them signed in or out if the token is valid or not
-    router.events.subscribe(async event => {
-      if (event instanceof NavigationEnd) {
-        await this.userService.refreshAuth();
-      }
-    });
+    // router.events.subscribe(async event => {
+    //   if (event instanceof NavigationEnd) {
+    //     await this.userService.refreshAuth();
+    //   }
+    // });
 
   }
   title = 'War of Heroes';
@@ -54,7 +54,7 @@ export class AppComponent {
   async logout(): Promise<void> {
     await this.userService.logout();
 
-    this.router.navigate(['/']);
+    this.router.navigate(['login']);
   }
 }
 

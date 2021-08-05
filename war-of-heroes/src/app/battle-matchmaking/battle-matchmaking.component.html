@@ -1,28 +1,20 @@
-<div class="container">
-  <div class="row">
-    <div class="col-xl text-center">
-      <h1>War of Heroes - Battle</h1>
-      <div *ngIf="!this.matchmakingInProgress && !this.gameReady">
-        <button class="btn btn-success" (click)="connect()">Play</button>
+<div class="d-flex flex-column align-items-center">
+  <div class="col-xl text-center">
+    <div *ngIf="!this.matchmakingInProgress && !this.gameReady">
+      <button class="btn btn-success" (click)="connect()">Play</button>
+    </div>
+
+    <div *ngIf="this.matchmakingInProgress">
+      <h3>Finding an opponent</h3>
+
+      <div class="spinner-border text-success" role="status">
+        <span class="sr-only">Loading...</span>
       </div>
 
-      <div *ngIf="this.matchmakingInProgress">
-        <h3>Finding an opponent...</h3>
-
-        <div class="spinner-border text-success" role="status">
-          <span class="sr-only">Loading...</span>
-        </div>
-      </div>
-
-      <div *ngIf="this.gameReady">
-        <h3><button class="btn btn-primary" (click)="winGame()">Win</button></h3>
-      </div>
-
-      <div *ngIf="this.gameOver && !this.matchmakingInProgress">
-          <h2 *ngIf="this.winner">You clicked first! You won! You won 50 coins!</h2>
-          <h2 *ngIf="!this.winner">Your opponent clicked first! You lost! You got 5 coins for your efforts</h2>
-          <img src={{this.image}}/>
-      </div>
+      <div><button type="button" class="btn btn-primary stop-button" (click)="stopMatchmaking()">
+        Stop
+      </button>
+    </div>
     </div>
   </div>
 </div>

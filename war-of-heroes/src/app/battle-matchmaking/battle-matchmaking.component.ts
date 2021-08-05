@@ -21,6 +21,7 @@ export class BattleMatchmakingComponent implements OnInit {
   constructor(private userService: UserService, private router: Router) { }
 
   ngOnInit(): void {
+    this.connect();
   }
 
   connect(): void {
@@ -70,5 +71,10 @@ export class BattleMatchmakingComponent implements OnInit {
   winGame() {
     console.log("Hit the win button!");
     this.socket.emit("win");
+  }
+
+  stopMatchmaking() {
+    this.socket.close();
+    this.router.navigate(['']);
   }
 }
