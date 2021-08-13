@@ -82,7 +82,15 @@ export class UserService {
     return this.user != null;
   }
 
-  getUserId(): number  | string{
+  getUser(): User | null {
+    if (!this.isSignedIn()) {
+      return null;
+    }
+
+    return this.user;
+  }
+
+  getUserId(): number  | string {
     if (!this.isSignedIn()) {
       return '';
     }
@@ -205,7 +213,6 @@ export class UserService {
   }
 
   setUser(user: User) {
-    console.log(user);
     this.user = user;
   }
 

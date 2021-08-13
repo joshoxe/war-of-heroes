@@ -14,7 +14,6 @@ import { HeroCardComponent } from './hero-card/hero-card.component';
 import {DragDropModule} from '@angular/cdk/drag-drop';
 import { GridsterModule } from 'angular-gridster2';
 import { CookieModule } from 'ngx-cookie';
-import { BattleMatchmakingComponent } from './battle-matchmaking/battle-matchmaking.component';
 import { BattleGameComponent } from './battle-game/battle-game.component';
 import { HomeComponent } from './home/home.component';
 
@@ -25,7 +24,6 @@ import { HomeComponent } from './home/home.component';
     DashboardComponent,
     UserHeroesComponent,
     HeroCardComponent,
-    BattleMatchmakingComponent,
     BattleGameComponent,
     HomeComponent
   ],
