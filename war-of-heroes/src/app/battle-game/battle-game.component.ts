@@ -85,6 +85,7 @@ class MainScene extends Phaser.Scene {
 
   create() {
 
+    this.socket.onAny((eventName, data) => {
 
     this.socket = io(environment.gameServerUrl);
 
@@ -112,7 +113,6 @@ class MainScene extends Phaser.Scene {
       if (eventName == "win") {
         console.log("YOU WON")
       }
-
       if (eventName == "lose") {
         console.log("YOU LOSE")
       }
