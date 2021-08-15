@@ -6,6 +6,7 @@ import { UserService } from '../user.service';
 import { environment } from 'src/environments/environment';
 import Card from '../game/card';
 import { Hero } from '../hero';
+import { HeroDealer } from '../game/heroDealer';
 
 @Component({
   selector: 'app-battle-game',
@@ -65,6 +66,8 @@ class MainScene extends Phaser.Scene {
   user: User;
   jwtToken: string;
   deck: number[];
+  userDeck: Hero[];
+  opponentDeck: Hero[];
   socket: Socket;
   gameOver = false;
   gameReady = false;
@@ -77,33 +80,45 @@ class MainScene extends Phaser.Scene {
 
   init(args: any) {
     this.user = args.user;
-    //console.log(this.user);
     this.jwtToken = args.jwtToken;
-    //console.log(jwtToken, this.jwtToken)
     this.deck = args.deck;
   }
 
   create() {
+    const matchmakingText = this.add.text(0, 0, 'Finding an opponent..');
     this.socket = io(environment.gameServerUrl);
 
     this.socket.onAny((eventName, data) => {
       if (eventName == 'matchmaking') {
-        // Pass the auth tokens so the server can call API endpoints for user data
-        // Pass user deck here
         this.socket.emit('matchmaking', [
           this.user.id,
           this.user.firstName,
+          this.deck,
           this.jwtToken,
           this.user.accessToken,
         ]);
       }
 
       if (eventName == 'ready') {
-        this.readyToLoad = true;
-        this.matchmakingInProgress = false;
+        if (!data) {
+          console.log('An error occurred setting up the game');
+          return;
+        }
+
+        this.userDeck = data;
+        this.socket.emit('myDeck', this.userDeck);
       }
 
       if (eventName == 'opponentDeck') {
+        this.opponentDeck = data;
+        const heroDealer = new HeroDealer(
+          this,
+          this.userDeck,
+          this.opponentDeck
+        );
+        heroDealer.loadCards();
+        this.matchmakingInProgress = false;
+        matchmakingText.destroy();
       }
 
       if (eventName == 'message') {
@@ -127,21 +142,5 @@ class MainScene extends Phaser.Scene {
   preload() {
     this.load.image('heroCard', 'assets/images/card.png');
   }
-  update() {
-    if (this.readyToLoad == true && this.gameReady === false) {
-      for (let i = 0; i < this.deck.length; i++) {
-        const heroId = this.deck[i];
-        var testHero: Hero = {
-          name: 'Test Hero',
-          attackDamage: 1,
-          description: 'A test Hero',
-          id: 1,
-          ultimateAttackDamage: 5,
-        };
-
-        new Card(this, testHero, 475 + i * 155, 650);
-      }
-      this.gameReady = true;
-    }
-  }
+  update() {}
 }
