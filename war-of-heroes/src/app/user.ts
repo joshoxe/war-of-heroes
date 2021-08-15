@@ -1,6 +1,6 @@
 import { UserHero } from "./userHero";
 
-export interface User {
+export class User {
     id: number;
     googleID: number;
     firstName: string;

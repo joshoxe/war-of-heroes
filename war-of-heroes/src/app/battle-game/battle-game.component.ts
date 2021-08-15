@@ -4,6 +4,8 @@ import Phaser from 'phaser';
 import { User } from '../user';
 import { UserService } from '../user.service';
 import { environment } from 'src/environments/environment';
+import Card from '../game/card';
+import { Hero } from '../hero';
 
 
 @Component({
@@ -63,21 +65,26 @@ class MainScene extends Phaser.Scene {
     jwtToken: string;
     deck: number[];
     socket: Socket;
+    gameOver = false;
+    gameReady = false;
+    readyToLoad = false;
+    matchmakingInProgress = true;
 
   constructor() {
     super({ key: 'main' });
   }
 
-  init(user, jwtToken, deck) {
-    this.user = user;
-    this.jwtToken = jwtToken;
-    this.deck = deck;
+  init(args: any) {
+    this.user = args.user;
+    //console.log(this.user);
+    this.jwtToken = args.jwtToken;
+    //console.log(jwtToken, this.jwtToken)
+    this.deck = args.deck;
+
   }
 
   create() {
-    var gameOver = false;
-    var gameReady = false;
-    var matchmakingInProgress = true;
+
 
     this.socket = io(environment.gameServerUrl);
 
@@ -85,12 +92,17 @@ class MainScene extends Phaser.Scene {
 
       if (eventName == "matchmaking") {
         // Pass the auth tokens so the server can call API endpoints for user data
+        // Pass user deck here
         this.socket.emit("matchmaking", [this.user.id, this.user.firstName, this.jwtToken, this.user.accessToken]);
       }
 
       if (eventName == "ready") {
-        gameReady = true;
-        matchmakingInProgress = false;
+        this.readyToLoad = true;
+        this.matchmakingInProgress = false;
+      }
+
+      if (eventName == "opponentDeck") {
+
       }
 
       if (eventName == "message"){
@@ -106,16 +118,30 @@ class MainScene extends Phaser.Scene {
       }
     })
 
-     var winButton = this.add.text(75, 350, ['WIN GAME']).setFontSize(18).setFontFamily('Trebuchet MS').setColor('#00ffff').setInteractive();
-
-     winButton.on('pointerdown',() => {
-      this.socket.emit("win");
-    })
+    this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+      gameObject.x = dragX;
+      gameObject.y = dragY;
+  })
   }
   preload() {
-
+    this.load.image('heroCard', 'assets/images/card.png');
   }
   update() {
-    console.log('update method');
+    if (this.readyToLoad == true && this.gameReady === false) {
+      for (let i = 0; i < this.deck.length; i++) {
+        const heroId = this.deck[i];
+        var testHero: Hero = {
+          name: "Test Hero",
+          attackDamage: 1,
+          description: "A test Hero",
+          id: 1,
+          ultimateAttackDamage: 5
+        };
+  
+        new Card(this, testHero, 475 + (i * 155), 650);
+      }
+      this.gameReady = true;
+    }
+
   }
 }
