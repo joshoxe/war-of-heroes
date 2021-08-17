@@ -4,21 +4,24 @@ import Phaser from 'phaser';
 import { User } from '../user';
 import { UserService } from '../user.service';
 import { environment } from 'src/environments/environment';
-
+import Card from '../game/card';
+import { Hero } from '../hero';
+import { HeroDealer } from '../game/heroDealer';
+import { HeroZone } from '../game/heroZone';
 
 @Component({
   selector: 'app-battle-game',
   templateUrl: './battle-game.component.html',
-  styleUrls: ['./battle-game.component.css']
+  styleUrls: ['./battle-game.component.css'],
 })
 export class BattleGameComponent implements OnInit {
   @Input()
-  socket: Socket
+  socket: Socket;
 
   testObject = {
-    prop1: "1",
-    prop2: "2"
-  }
+    prop1: '1',
+    prop2: '2',
+  };
 
   phaserGame: Phaser.Game;
   config: Phaser.Types.Core.GameConfig;
@@ -30,92 +33,136 @@ export class BattleGameComponent implements OnInit {
       type: Phaser.AUTO,
       height: BattleGameComponent.HEIGHT,
       width: BattleGameComponent.WIDTH,
-      scene: [ MainScene ],
+      scene: [MainScene],
       parent: 'gameContainer',
-      physics: {
-        default: 'arcade',
-        arcade: {
-          gravity: { y: 100 }
-        }
-      },
-      backgroundColor: '#22384f'
+      backgroundColor: '#22384f',
     };
-   }
+  }
 
-   ngOnInit() {}
+  ngOnInit() {}
 
-   ngAfterViewInit(): void {
+  ngAfterViewInit(): void {
     const user = this.userService.getUser();
     const jwtToken = this.userService.getUserJwtToken();
     var deck;
-    this.userService.getUserDeck().subscribe(deckData => {
+    this.userService.getUserDeck().subscribe((deckData) => {
       deck = deckData;
       this.phaserGame = new Phaser.Game(this.config);
-      this.phaserGame.scene.start('main', {user: user, jwtToken: jwtToken, deck: deck});
-    })
-    
+      this.phaserGame.scene.start('main', {
+        user: user,
+        jwtToken: jwtToken,
+        deck: deck,
+      });
+    });
   }
 }
 
-
 class MainScene extends Phaser.Scene {
-    user: User;
-    jwtToken: string;
-    deck: number[];
-    socket: Socket;
+  user: User;
+  jwtToken: string;
+  deck: number[];
+  userDeck: Hero[];
+  opponentDeck: Hero[];
+  socket: Socket;
+  gameOver = false;
+  gameReady = false;
+  readyToLoad = false;
+  matchmakingInProgress = true;
 
   constructor() {
     super({ key: 'main' });
   }
 
-  init(user, jwtToken, deck) {
-    this.user = user;
-    this.jwtToken = jwtToken;
-    this.deck = deck;
+  init(args: any) {
+    this.user = args.user;
+    this.jwtToken = args.jwtToken;
+    this.deck = args.deck;
   }
 
   create() {
-    var gameOver = false;
-    var gameReady = false;
-    var matchmakingInProgress = true;
-
+    this.cameras.main.setRoundPixels(true);
+    const matchmakingText = this.add.text(BattleGameComponent.WIDTH / 2, BattleGameComponent.HEIGHT / 2, 'Finding an opponent..',  {font: "24px Lato" });
     this.socket = io(environment.gameServerUrl);
 
     this.socket.onAny((eventName, data) => {
-
-      if (eventName == "matchmaking") {
-        // Pass the auth tokens so the server can call API endpoints for user data
-        this.socket.emit("matchmaking", [this.user.id, this.user.firstName, this.jwtToken, this.user.accessToken]);
+      if (eventName == 'matchmaking') {
+        this.socket.emit('matchmaking', [
+          this.user.id,
+          this.user.firstName,
+          this.deck,
+          this.jwtToken,
+          this.user.accessToken,
+        ]);
       }
 
-      if (eventName == "ready") {
-        gameReady = true;
-        matchmakingInProgress = false;
+      if (eventName == 'ready') {
+        if (!data) {
+          console.log('An error occurred setting up the game');
+          return;
+        }
+
+        this.userDeck = data;
+        this.socket.emit('myDeck', this.userDeck);
       }
 
-      if (eventName == "message"){
+      if (eventName == 'opponentDeck') {
+        this.opponentDeck = data;
+        const heroDealer = new HeroDealer(
+          this,
+          this.userDeck,
+          this.opponentDeck
+        );
+
+        heroDealer.loadCards();
+        
+        var zone = new HeroZone(this);
+        var heroZone = zone.createHeroZone(BattleGameComponent.WIDTH / 2, BattleGameComponent.HEIGHT / 2);
+
+        this.matchmakingInProgress = false;
+        matchmakingText.destroy();
+      }
+
+      if (eventName == 'message') {
         console.log(data);
       }
 
-      if (eventName == "win") {
-        console.log("YOU WON")
+      if (eventName == 'win') {
+        console.log('YOU WON');
       }
-
-      if (eventName == "lose") {
-        console.log("YOU LOSE")
+      if (eventName == 'lose') {
+        console.log('YOU LOSE');
       }
-    })
+    });
 
-     var winButton = this.add.text(75, 350, ['WIN GAME']).setFontSize(18).setFontFamily('Trebuchet MS').setColor('#00ffff').setInteractive();
+    this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+      gameObject.x = dragX;
+      gameObject.y = dragY;
+    });
 
-     winButton.on('pointerdown',() => {
-      this.socket.emit("win");
-    })
+    this.input.on('dragend', function (pointer, gameObject, dropped) {
+      if (!dropped) {
+        gameObject.x = gameObject.input.dragStartX;
+        gameObject.y = gameObject.input.dragStartY;
+      }
+    });
+
+    this.input.on('drop', function (pointer, gameObject, dropZone) {
+      var dropZoneCards = dropZone.data.values.cards;
+
+      if (dropZoneCards >= 3) {
+        gameObject.x = gameObject.input.dragStartX;
+        gameObject.y = gameObject.input.dragStartY;
+        return;
+      }
+  
+      dropZone.data.values.cards++;
+      gameObject.x = (dropZone.x - (dropZone.width / 2)) + (dropZone.data.values.cards * 150);
+      gameObject.y = dropZone.y - 350;
+      gameObject.disableInteractive();
+    });
   }
   preload() {
-
+    this.load.image('heroCard', 'assets/images/card.png');
   }
-  update() {
-    console.log('update method');
-  }
+  update() {}
 }
