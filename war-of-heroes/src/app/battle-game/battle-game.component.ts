@@ -7,6 +7,7 @@ import { environment } from 'src/environments/environment';
 import Card from '../game/card';
 import { Hero } from '../hero';
 import { HeroDealer } from '../game/heroDealer';
+import { HeroZone } from '../game/heroZone';
 
 @Component({
   selector: 'app-battle-game',
@@ -34,12 +35,6 @@ export class BattleGameComponent implements OnInit {
       width: BattleGameComponent.WIDTH,
       scene: [MainScene],
       parent: 'gameContainer',
-      physics: {
-        default: 'arcade',
-        arcade: {
-          gravity: { y: 100 },
-        },
-      },
       backgroundColor: '#22384f',
     };
   }
@@ -85,7 +80,8 @@ class MainScene extends Phaser.Scene {
   }
 
   create() {
-    const matchmakingText = this.add.text(0, 0, 'Finding an opponent..');
+    this.cameras.main.setRoundPixels(true);
+    const matchmakingText = this.add.text(BattleGameComponent.WIDTH / 2, BattleGameComponent.HEIGHT / 2, 'Finding an opponent..',  {font: "24px Lato" });
     this.socket = io(environment.gameServerUrl);
 
     this.socket.onAny((eventName, data) => {
@@ -116,7 +112,12 @@ class MainScene extends Phaser.Scene {
           this.userDeck,
           this.opponentDeck
         );
+
         heroDealer.loadCards();
+        
+        var zone = new HeroZone(this);
+        var heroZone = zone.createHeroZone(BattleGameComponent.WIDTH / 2, BattleGameComponent.HEIGHT / 2);
+
         this.matchmakingInProgress = false;
         matchmakingText.destroy();
       }
@@ -137,8 +138,29 @@ class MainScene extends Phaser.Scene {
       gameObject.x = dragX;
       gameObject.y = dragY;
     });
-  }
 
+    this.input.on('dragend', function (pointer, gameObject, dropped) {
+      if (!dropped) {
+        gameObject.x = gameObject.input.dragStartX;
+        gameObject.y = gameObject.input.dragStartY;
+      }
+    });
+
+    this.input.on('drop', function (pointer, gameObject, dropZone) {
+      var dropZoneCards = dropZone.data.values.cards;
+
+      if (dropZoneCards >= 3) {
+        gameObject.x = gameObject.input.dragStartX;
+        gameObject.y = gameObject.input.dragStartY;
+        return;
+      }
+  
+      dropZone.data.values.cards++;
+      gameObject.x = (dropZone.x - (dropZone.width / 2)) + (dropZone.data.values.cards * 150);
+      gameObject.y = dropZone.y - 350;
+      gameObject.disableInteractive();
+    });
+  }
   preload() {
     this.load.image('heroCard', 'assets/images/card.png');
   }
