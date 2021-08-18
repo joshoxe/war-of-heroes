@@ -5,29 +5,31 @@ import Card from './card';
 
 export class HeroDealer {
     scene: Scene;
-    userDeck: Hero[];
-    opponentDeck: Hero[];
 
-    constructor(scene: Scene, userDeck: Hero[], opponentDeck: Hero[]) {
+    constructor(scene: Scene) {
         this.scene = scene;
-        this.userDeck = userDeck;
-        this.opponentDeck = opponentDeck;
     }
 
-    loadCards() {
-        var width = BattleGameComponent.WIDTH;
+    loadUserCards(userHand: Hero[]) {
         var height = BattleGameComponent.HEIGHT;
+        var width = BattleGameComponent.WIDTH;
+        var x = width * 0.1;
+        var y = height * 0.38;
 
-        var cardStartingPoint = width * 0.1;
-        var userCardVerticalPoint = height * 0.38;
-        for (let i = 0; i < this.userDeck.length; i++) {
-            const hero = this.userDeck[i];
-            new Card(this.scene, hero, cardStartingPoint + i * 110, userCardVerticalPoint);
+        for (let i = 0; i < userHand.length; i++) {
+            const hero = userHand[i];
+            new Card(this.scene, hero, x + i * 110, y);
           }
+    }
 
-        for (let i = 0; i < this.opponentDeck.length; i++) {
-            const hero = this.opponentDeck[i];
-            new Card(this.scene, hero, cardStartingPoint + i * 110, 90, false);
+    loadOpponentCards(opponentHand: Hero[]) {
+        var width = BattleGameComponent.WIDTH;
+        var x = width * 0.1;
+        var y = 90;
+
+        for (let i = 0; i < opponentHand.length; i++) {
+            const hero = opponentHand[i];
+            new Card(this.scene, hero, x + i * 110, y, false);
         }
     }
 }

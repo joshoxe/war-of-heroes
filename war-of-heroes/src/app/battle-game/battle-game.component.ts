@@ -8,6 +8,8 @@ import Card from '../game/card';
 import { Hero } from '../hero';
 import { HeroDealer } from '../game/heroDealer';
 import { HeroZone } from '../game/heroZone';
+import { Player } from '../game/player';
+import { Game } from '../game/game';
 
 @Component({
   selector: 'app-battle-game',
@@ -44,14 +46,14 @@ export class BattleGameComponent implements OnInit {
   ngAfterViewInit(): void {
     const user = this.userService.getUser();
     const jwtToken = this.userService.getUserJwtToken();
-    var deck;
-    this.userService.getUserDeck().subscribe((deckData) => {
-      deck = deckData;
+    var inventory;
+    this.userService.getUserInventory().subscribe((inventoryData) => {
+      inventory = inventoryData;
       this.phaserGame = new Phaser.Game(this.config);
       this.phaserGame.scene.start('main', {
         user: user,
         jwtToken: jwtToken,
-        deck: deck,
+        inventory: inventory,
       });
     });
   }
@@ -68,6 +70,9 @@ class MainScene extends Phaser.Scene {
   gameReady = false;
   readyToLoad = false;
   matchmakingInProgress = true;
+  
+  gameManager: Game;
+  heroDealer: HeroDealer;
 
   constructor() {
     super({ key: 'main' });
@@ -76,7 +81,10 @@ class MainScene extends Phaser.Scene {
   init(args: any) {
     this.user = args.user;
     this.jwtToken = args.jwtToken;
-    this.deck = args.deck;
+    
+    var player = new Player(this.user.firstName);
+    this.gameManager = new Game(this, player);
+    this.gameManager.setPlayerInventoryIds(args.inventory);
   }
 
   create() {
@@ -89,39 +97,70 @@ class MainScene extends Phaser.Scene {
         this.socket.emit('matchmaking', [
           this.user.id,
           this.user.firstName,
-          this.deck,
+          this.gameManager.player,
           this.jwtToken,
           this.user.accessToken,
         ]);
       }
 
-      if (eventName == 'ready') {
-        if (!data) {
-          console.log('An error occurred setting up the game');
-          return;
-        }
-
-        this.userDeck = data;
-        this.socket.emit('myDeck', this.userDeck);
+      /**
+       * playerInventory: Event received when the server has retrieved the heroes from the database based on the IDs from the user's inventory
+       * `data` will contain an array of heroes from the user's inventory - the inventory in this instance is the database version.
+       */
+      if (eventName == 'playerInventory') {
+        this.gameManager.setPlayerInventory(data);
       }
 
-      if (eventName == 'opponentDeck') {
-        this.opponentDeck = data;
-        const heroDealer = new HeroDealer(
-          this,
-          this.userDeck,
-          this.opponentDeck
-        );
+      if (eventName == 'roomReady') {
+        this.socket.emit('myInfo', this.gameManager.player);
+      }
 
-        heroDealer.loadCards();
+      /**
+       * opponentInfo: Event received during matchamking when the opponent client receives it's inventory and sends a `myInfo` event to the server
+       * `data` contains a Player object containing all game-related info of the opponent
+       */
+      if (eventName == 'opponentInfo') {
+        const opponent = new Player(data.name);
+        this.gameManager.setOpponent(opponent);
+        this.gameManager.renderPlayer();
+        this.heroDealer = new HeroDealer(this);
         
         var zone = new HeroZone(this);
-        var heroZone = zone.createHeroZone(BattleGameComponent.WIDTH / 2, BattleGameComponent.HEIGHT / 2);
+        zone.createHeroZone(BattleGameComponent.WIDTH / 2 - 100, BattleGameComponent.HEIGHT / 2);
 
         this.matchmakingInProgress = false;
         matchmakingText.destroy();
+        this.socket.emit('ready');
       }
 
+      /**
+       * newPlayerHand: Event received when the server sends a new hand from the user's inventory
+       * `data` will contain an array of heroes, 5 random heroes picked from the user's inventory
+       * The inventory in this instance is the inventory in the game state, not the database.
+       */
+      if (eventName == "newPlayerHand") {
+        const newHand = data;
+        this.gameManager.setPlayerCurrentHand(newHand);
+        this.heroDealer.loadUserCards(this.gameManager.player.currentHand);
+      }
+
+      /**
+       * newOpponentHand: Same as newPlayerHand, but for the opponent's new hand
+       */
+      if (eventName == 'newOpponentHand') {
+        const newOpponentHand = data;
+        this.gameManager.setOpponentCurrentHand(newOpponentHand);
+        this.heroDealer.loadOpponentCards(this.gameManager.opponent.currentHand);
+      }
+
+      if (eventName == "yourTurn") {
+        this.gameManager.playerTurn = true;
+      }
+
+      if (eventName == "opponentTurn") {
+        this.gameManager.playerTurn = false;
+      }
+  
       if (eventName == 'message') {
         console.log(data);
       }
