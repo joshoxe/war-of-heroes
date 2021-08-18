@@ -9,6 +9,9 @@ export class Game {
     player: Player;
     opponent: Player;
     scene: Scene;
+    playerHealth: Phaser.GameObjects.Text;
+    playerInventory: Phaser.GameObjects.Text;
+    playerDiscardPile: Phaser.GameObjects.Text;
 
     constructor(scene: Scene, player: Player) {
         this.player = player;
@@ -16,8 +19,11 @@ export class Game {
     }
 
     renderPlayer() {
-        this.scene.add.text(BattleGameComponent.WIDTH / 2, BattleGameComponent.HEIGHT - (BattleGameComponent.HEIGHT * 0.13), this.player.name, {font: "28px Lato", color: "#ffffff"});
-        this.scene.add.text(BattleGameComponent.WIDTH / 2, BattleGameComponent.HEIGHT - (BattleGameComponent.HEIGHT * 0.09), `Health: ${this.player.health}`, {font: "24px Lato", color: "#ffffff"});
+        var playerNameY = BattleGameComponent.HEIGHT - (BattleGameComponent.HEIGHT * 0.10);
+        this.scene.add.text(BattleGameComponent.WIDTH / 2, playerNameY, this.player.name, {font: "28px Lato", color: "#ffffff"});
+        this.playerHealth = this.scene.add.text(BattleGameComponent.WIDTH / 2, playerNameY + 25, `Health: ${this.player.health}`, {font: "24px Lato", color: "#ffffff"});
+
+        this.playerDiscardPile = this.scene.add.text(BattleGameComponent.WIDTH * 0.90, BattleGameComponent.HEIGHT * 0.85, `Discard: ${this.player.discardPile.length}`, {font: "14px Lato", color: "#ffffff"});
     }
 
     setOpponent(opponent: Player) {
@@ -33,6 +39,12 @@ export class Game {
     
     setPlayerInventory(inventory: Hero[]) {
         this.player.inventory = inventory;
+
+        if (this.playerInventory) {
+            this.playerInventory.destroy();
+        }
+        
+        this.playerInventory = this.scene.add.text(20, BattleGameComponent.HEIGHT * 0.85, `Inventory: ${this.player.inventory.length}`, {font: "14px Lato", color: "#ffffff"});
     }
 
     setPlayerCurrentHand(hand: Hero[]) {
