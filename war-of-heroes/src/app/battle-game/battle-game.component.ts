@@ -135,11 +135,13 @@ class MainScene extends Phaser.Scene {
 
       /**
        * newPlayerHand: Event received when the server sends a new hand from the user's inventory
-       * `data` will contain an array of heroes, 5 random heroes picked from the user's inventory
+       * `data` will contain an array of heroes (the hand), 5 random heroes picked from the user's inventory and the user's new inventory state in-game
        * The inventory in this instance is the inventory in the game state, not the database.
        */
       if (eventName == "newPlayerHand") {
-        const newHand = data;
+        const newHand = data.hand;
+        const newInventory = data.inventory;
+        this.gameManager.setPlayerInventory(newInventory);
         this.gameManager.setPlayerCurrentHand(newHand);
         this.heroDealer.loadUserCards(this.gameManager.player.currentHand);
       }
