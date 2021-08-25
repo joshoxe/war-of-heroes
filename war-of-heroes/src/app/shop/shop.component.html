@@ -1,0 +1,21 @@
+<div class="card text-center">
+  <div class="card-header">Shop</div>
+  <div class="card-body">
+    <h5 class="card-title">Booster Pack</h5>
+    <p class="card-text">A booster pack that contains 5 random heroes, no guarantees!</p>
+    <a class="btn btn-primary" (click)="buyBoosterPack()">Buy pack (50 coins)</a>
+  </div>
+</div>
+
+<div *ngIf="this.heroesBought.length > 0">
+  <div class="card text-center">
+    <div class="card-header">Heroes bought!</div>
+    <div class="card-body">
+      <div *ngFor="let hero of this.heroesBought">
+        <div class="hero-card">
+          <app-hero-card [hero]="hero"></app-hero-card>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

@@ -6,6 +6,7 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 import { AccessGuard } from './access-guard.guard';
 import { BattleGameComponent } from './battle-game/battle-game.component';
 import { HomeComponent } from './home/home.component';
+import { ShopComponent } from './shop/shop.component';
 
 const routes: Routes = [
   {
@@ -15,8 +16,8 @@ const routes: Routes = [
   {
     path: 'home',
     component: HomeComponent,
-    data: {requiresLogin: true},
-    canActivate: [ AccessGuard ]
+    data: { requiresLogin: true },
+    canActivate: [AccessGuard],
   },
   {
     path: '',
@@ -26,15 +27,21 @@ const routes: Routes = [
   {
     path: 'dashboard',
     component: DashboardComponent,
-    data: {requiresLogin: true},
-    canActivate: [ AccessGuard ]
+    data: { requiresLogin: true },
+    canActivate: [AccessGuard],
   },
   {
     path: 'battle-game',
     component: BattleGameComponent,
-    data: {requiresLogin: true},
-    canActivate: [ AccessGuard ]
-  }
+    data: { requiresLogin: true },
+    canActivate: [AccessGuard],
+  },
+  {
+    path: 'shop',
+    component: ShopComponent,
+    data: { requiresLogin: true },
+    canActivate: [AccessGuard],
+  },
 ];
 
 @NgModule({
@@ -42,5 +49,4 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule],
 })
-export class AppRoutingModule {
-}
+export class AppRoutingModule {}

@@ -7,6 +7,7 @@ import { User } from './user';
 import { environment } from './../environments/environment';
 import { CookieOptions, CookieService } from 'ngx-cookie';
 import { Router } from '@angular/router';
+import { Hero } from './hero';
 
 const COOKIE_EXPIRATION_DAYS = 1;
 const ACCESS_TOKEN_COOKIE_NAME = 'accessToken';
@@ -49,33 +50,32 @@ export class UserService {
       }),
     };
 
-    this.http
-      .post<User>(
-        `${this.userUrl}/${this.usersEndpoint}/login`,
-        googleUser,
-        options
-      )
-      .subscribe((user) => {
-        this.user = user;
+    this.http.post<User>(`${this.userUrl}/${this.usersEndpoint}/login`, googleUser, options).subscribe((user) => {
+      this.user = user;
 
-
-        this.cookieService.put(
-          ACCESS_TOKEN_COOKIE_NAME,
-          user.accessToken,
-          this.cookieOptions
-        );
-        this.cookieService.put(
-          JWT_TOKEN_COOKIE_NAME,
-          googleUser.idToken,
-          this.cookieOptions
-        );
-      });
+      this.cookieService.put(ACCESS_TOKEN_COOKIE_NAME, user.accessToken, this.cookieOptions);
+      this.cookieService.put(JWT_TOKEN_COOKIE_NAME, googleUser.idToken, this.cookieOptions);
+    });
   }
 
   private getCookieExpirationDate() {
     var date: Date = new Date();
     date.setDate(date.getDate() + COOKIE_EXPIRATION_DAYS);
     return date;
+  }
+
+  addToUserInventory(heroesBought: number[]): void {
+    if (!this.isSignedIn()) {
+      console.log('not signed in');
+      return;
+    }
+    this.http.put<number[]>(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/inventory/add`, heroesBought, this.requestOptions).subscribe();
+  }
+
+  removeUserCoins(coins: number) {
+    this.http.put<number[]>(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/coins/add`, coins, this.requestOptions).subscribe(() => {
+      this.user.coins -= coins;
+    });
   }
 
   isSignedIn(): boolean {
@@ -90,7 +90,7 @@ export class UserService {
     return this.user;
   }
 
-  getUserId(): number  | string {
+  getUserId(): number | string {
     if (!this.isSignedIn()) {
       return '';
     }
@@ -107,17 +107,11 @@ export class UserService {
   }
 
   getUserInventory(): Observable<number[]> {
-    return this.http.get<number[]>(
-      `${this.userUrl}/${this.usersEndpoint}/${this.user.id}/inventory`,
-      this.requestOptions
-    );
+    return this.http.get<number[]>(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/inventory`, this.requestOptions);
   }
 
   getUserDeck(): Observable<number[]> {
-    return this.http.get<number[]>(
-      `${this.userUrl}/${this.usersEndpoint}/${this.user.id}/deck`,
-      this.requestOptions
-    );
+    return this.http.get<number[]>(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/deck`, this.requestOptions);
   }
 
   getUserWins(): number {
@@ -150,11 +144,7 @@ export class UserService {
    */
   async updateUserDeck(deck: number[]): Promise<any> {
     return this.http
-      .post<number[]>(
-        `${this.userUrl}/${this.usersEndpoint}/${this.user.id}/deck/update`,
-        deck,
-        this.requestOptions
-      )
+      .post<number[]>(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/deck/update`, deck, this.requestOptions)
       .pipe(
         catchError((e: any) => {
           return throwError(e);
@@ -170,11 +160,7 @@ export class UserService {
    */
   async updateUserInventory(inventory: number[]): Promise<any> {
     return this.http
-      .post(
-        `${this.userUrl}/${this.usersEndpoint}/${this.user.id}/inventory/update`,
-        inventory,
-        this.requestOptions
-      )
+      .post(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/inventory/update`, inventory, this.requestOptions)
       .pipe(
         catchError((e: any) => {
           return throwError(e);
@@ -184,10 +170,10 @@ export class UserService {
   }
 
   private getAccessToken(): object {
-    var accessToken = this.cookieService.get(ACCESS_TOKEN_COOKIE_NAME)
+    var accessToken = this.cookieService.get(ACCESS_TOKEN_COOKIE_NAME);
 
     if (accessToken == null) {
-      accessToken = "";
+      accessToken = '';
     }
 
     return { accessToken: accessToken };
@@ -196,20 +182,17 @@ export class UserService {
   refreshAuth(): Observable<User> {
     var requestBody = this.getAccessToken();
 
-    if (!this.cookieService.get(JWT_TOKEN_COOKIE_NAME)|| !this.cookieService.get(ACCESS_TOKEN_COOKIE_NAME)) {
-      console.log("Cookies not defined");
-      return throwError("No cookie");
+    if (!this.cookieService.get(JWT_TOKEN_COOKIE_NAME) || !this.cookieService.get(ACCESS_TOKEN_COOKIE_NAME)) {
+      console.log('Cookies not defined');
+      return throwError('No cookie');
     }
 
-    return this.http
-      .post<User>(
-        `${this.userUrl}/${this.usersEndpoint}/refresh`,
-        requestBody,
-        this.requestOptions
-      ).pipe(catchError((err) => {
+    return this.http.post<User>(`${this.userUrl}/${this.usersEndpoint}/refresh`, requestBody, this.requestOptions).pipe(
+      catchError((err) => {
         this.user = null;
         throw throwError(err);
-      }));
+      })
+    );
   }
 
   setUser(user: User) {
@@ -218,15 +201,18 @@ export class UserService {
 
   async logout(): Promise<void> {
     var requestBody = this.getAccessToken();
-    this.http.post(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/logout`, requestBody, this.requestOptions).pipe(
-       catchError((e: any) => {
-         return throwError(e);
-       })
-    ).subscribe(() => {
-      this.user = null;
-      this.cookieService.remove(JWT_TOKEN_COOKIE_NAME);
-      this.cookieService.remove(ACCESS_TOKEN_COOKIE_NAME);
-    });
+    this.http
+      .post(`${this.userUrl}/${this.usersEndpoint}/${this.user.id}/logout`, requestBody, this.requestOptions)
+      .pipe(
+        catchError((e: any) => {
+          return throwError(e);
+        })
+      )
+      .subscribe(() => {
+        this.user = null;
+        this.cookieService.remove(JWT_TOKEN_COOKIE_NAME);
+        this.cookieService.remove(ACCESS_TOKEN_COOKIE_NAME);
+      });
   }
 
   public getUserAccessToken(): string {

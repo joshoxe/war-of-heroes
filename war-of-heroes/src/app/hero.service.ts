@@ -6,16 +6,15 @@ import { environment } from './../environments/environment';
 import { UserService } from './user.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class HeroService {
-
-  private options =  {
+  private options = {
     headers: new HttpHeaders({
       'Access-Control-Allow-Origin': '*',
-    })
-  }
-  constructor(private http: HttpClient, private userService: UserService) { }
+    }),
+  };
+  constructor(private http: HttpClient, private userService: UserService) {}
 
   heroesUrl = environment.heroesApiUrl;
 
@@ -24,7 +23,10 @@ export class HeroService {
   }
 
   getHeroesFromList(ids: number[]): Observable<Hero[]> {
-    return this.http.post<Hero[]>(this.heroesUrl + "/ids", { heroIds: ids }, this.options);
+    return this.http.post<Hero[]>(this.heroesUrl + '/ids', { heroIds: ids }, this.options);
   }
-  
+
+  buyBoosterPack(): Observable<Hero[]> | null {
+    return this.http.get<Hero[]>(this.heroesUrl + '/packs/5', this.options);
+  }
 }
