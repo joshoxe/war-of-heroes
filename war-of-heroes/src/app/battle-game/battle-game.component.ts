@@ -128,7 +128,6 @@ class MainScene extends Phaser.Scene {
 
         var zone = new HeroZone(this);
         zone.createHeroZone(this.game.canvas.width / 2 - 100, this.game.canvas.height / 2);
-
         matchmakingText.destroy();
         this.socket.emit('ready');
       }
