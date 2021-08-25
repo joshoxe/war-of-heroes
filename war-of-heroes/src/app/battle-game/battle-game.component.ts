@@ -108,6 +108,8 @@ class MainScene extends Phaser.Scene {
        */
       if (eventName == 'playerInventory') {
         this.gameManager.player.inventory = data;
+        this.gameManager.player.currentHand = [];
+        this.gameManager.player.discardPile = [];
       }
 
       if (eventName == 'roomReady') {
