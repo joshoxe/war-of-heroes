@@ -8,7 +8,7 @@ export class HeroZone {
     }
 
     createHeroZone(x: number, y: number): Phaser.GameObjects.Zone {
-        const width = BattleGameComponent.WIDTH * 0.8;
+        const width = this.scene.game.canvas.width * 0.8;
         const height = 200;
         var heroZone = this.scene.add.zone(x, y, width, height).setRectangleDropZone(width, height);
         heroZone.setData({ cards: 0 });
