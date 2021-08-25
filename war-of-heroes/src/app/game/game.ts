@@ -103,6 +103,7 @@ export class Game {
   }
 
   renderPlayer() {
+    console.log(this.player);
     var playerNameY = this.scene.game.canvas.height - this.scene.game.canvas.height * 0.1;
 
     if (this.playerHealth && this.playerName) {
