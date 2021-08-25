@@ -1,5 +1,5 @@
 .heroes {
-  margin: 0 0 2em 0;
+  margin: 0 5% 2em 0;
   list-style: none;
   padding: 0;
   display: inline;
@@ -52,18 +52,6 @@ input {
   padding: 0.5rem;
 }
 
-.inventory {
-  float: left;
-  max-width: 60rem;
-  overflow-y: hidden;
-  overflow-x: auto;
-}
-
-.deck {
-  position: fixed;
-  bottom: 20px;
-}
-
 h3 {
   font-family: 'Metal Mania', cursive;
   background: -webkit-linear-gradient(#24d5dc, #5589e8);
@@ -73,16 +61,7 @@ h3 {
 }
 
 .hero-list-inventory {
-  width: 60rem;
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
-}
-
-.hero-list-deck {
-  height: 25rem;
-  width: 100vw;
-  display: flex;
-  flex-direction: row;
-  background-color: #0f1f34;
 }

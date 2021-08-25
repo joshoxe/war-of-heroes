@@ -14,7 +14,6 @@ export class UserHeroesComponent implements OnInit {
 
   constructor(private heroService: HeroService, private userService: UserService) {}
   ngOnInit(): void {
-    throw new Error('Method not implemented.');
   }
 
   heroesInventory: Hero[];
@@ -23,15 +22,10 @@ export class UserHeroesComponent implements OnInit {
   user: User;
 
   ngAfterViewInit(): void {
-    this.heroesInventory = [];
-    this.heroesDeck = [];
-    
+    this.heroesInventory = [];    
     this.userService.getUserInventory().subscribe((ids) => {
-      this.getHeroes(ids).subscribe((heroes) => this.heroesInventory = heroes);
-    });
-
-    this.userService.getUserDeck().subscribe((ids) => {
-      this.getHeroes(ids).subscribe((heroes) => this.heroesDeck = heroes);
+      this.getHeroes(ids).subscribe((heroes) => {
+        this.heroesInventory = heroes });
     });
   }
   
@@ -46,31 +40,5 @@ export class UserHeroesComponent implements OnInit {
 
   onSelect(hero: Hero): void {
     this.selectedHero = hero;
-  }
-
-  async transferToDeckFromInventory(hero: Hero): Promise<void> {
-      if (!this.heroesInventory.includes(hero)) {
-        return;
-      }
-
-      this.heroesInventory.splice(this.heroesInventory.indexOf(hero), 1);
-      this.heroesDeck.push(hero);
-
-      // Since a card is being transferred, update the API models
-      await this.userService.updateUserDeck(this.heroesDeck.map(h => h.id));
-      await this.userService.updateUserInventory(this.heroesInventory.map(h => h.id));
-  }
-
-  async transferToInventoryFromDeck(hero: Hero) {
-    if (!this.heroesDeck.includes(hero)) {
-      return;
-    }
-
-    this.heroesDeck.splice(this.heroesDeck.indexOf(hero), 1);
-    this.heroesInventory.push(hero);
-
-    // Since a card is being transferred, update the API models
-    await this.userService.updateUserDeck(this.heroesDeck.map(h => h.id));
-    await this.userService.updateUserInventory(this.heroesInventory.map(h => h.id));
   }
 }
