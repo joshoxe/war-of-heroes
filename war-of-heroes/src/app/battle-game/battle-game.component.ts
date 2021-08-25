@@ -19,22 +19,20 @@ import { Game } from '../game/game';
 export class BattleGameComponent implements OnInit {
   @Input()
   socket: Socket;
-
-  testObject = {
-    prop1: '1',
-    prop2: '2',
-  };
-
   phaserGame: Phaser.Game;
   config: Phaser.Types.Core.GameConfig;
-  public static HEIGHT: number = window.innerHeight;
-  public static WIDTH: number = window.innerWidth;
+  winner: boolean;
+  gameOver: boolean = false;
 
   constructor(private userService: UserService) {
     this.config = {
       type: Phaser.AUTO,
-      height: BattleGameComponent.HEIGHT,
-      width: BattleGameComponent.WIDTH,
+      height: 1080,
+      width: 1920,
+      scale: {
+        mode: Phaser.Scale.RESIZE,
+        autoCenter: Phaser.Scale.CENTER_BOTH,
+      },
       scene: [MainScene],
       parent: 'gameContainer',
       backgroundColor: '#22384f',
@@ -54,8 +52,15 @@ export class BattleGameComponent implements OnInit {
         user: user,
         jwtToken: jwtToken,
         inventory: inventory,
+        endFunction: this.handleEndGame,
       });
     });
+  }
+
+  handleEndGame(winner: boolean) {
+    this.gameOver = true;
+    this.winner = winner;
+    console.log('WINNER', this.winner, this.gameOver);
   }
 }
 
@@ -69,19 +74,19 @@ class MainScene extends Phaser.Scene {
   gameOver = false;
   gameReady = false;
   readyToLoad = false;
-  matchmakingInProgress = true;
-  
+  endFunction: any;
+
   gameManager: Game;
-  heroDealer: HeroDealer;
 
   constructor() {
     super({ key: 'main' });
   }
 
   init(args: any) {
+    this.endFunction = args.endFunction;
     this.user = args.user;
     this.jwtToken = args.jwtToken;
-    
+
     var player = new Player(this.user.firstName);
     this.gameManager = new Game(this, player);
     this.gameManager.setPlayerInventoryIds(args.inventory);
@@ -89,18 +94,12 @@ class MainScene extends Phaser.Scene {
 
   create() {
     this.cameras.main.setRoundPixels(true);
-    const matchmakingText = this.add.text(BattleGameComponent.WIDTH / 2, BattleGameComponent.HEIGHT / 2, 'Finding an opponent..',  {font: "24px Lato" });
+    const matchmakingText = this.add.text(this.game.canvas.width / 2, this.game.canvas.height / 2, 'Finding an opponent..', { font: '24px Lato' });
     this.socket = io(environment.gameServerUrl);
 
     this.socket.onAny((eventName, data) => {
       if (eventName == 'matchmaking') {
-        this.socket.emit('matchmaking', [
-          this.user.id,
-          this.user.firstName,
-          this.gameManager.player,
-          this.jwtToken,
-          this.user.accessToken,
-        ]);
+        this.socket.emit('matchmaking', [this.user.id, this.user.firstName, this.gameManager.player, this.jwtToken, this.user.accessToken]);
       }
 
       /**
@@ -108,7 +107,7 @@ class MainScene extends Phaser.Scene {
        * `data` will contain an array of heroes from the user's inventory - the inventory in this instance is the database version.
        */
       if (eventName == 'playerInventory') {
-        this.gameManager.setPlayerInventory(data);
+        this.gameManager.player.inventory = data;
       }
 
       if (eventName == 'roomReady') {
@@ -123,12 +122,13 @@ class MainScene extends Phaser.Scene {
         const opponent = new Player(data.name);
         this.gameManager.setOpponent(opponent);
         this.gameManager.renderPlayer();
-        this.heroDealer = new HeroDealer(this);
-        
-        var zone = new HeroZone(this);
-        zone.createHeroZone(BattleGameComponent.WIDTH / 2 - 100, BattleGameComponent.HEIGHT / 2);
+        this.gameManager.renderOpponent();
+        const heroDealer = new HeroDealer(this);
+        this.gameManager.setHeroDealer(heroDealer);
 
-        this.matchmakingInProgress = false;
+        var zone = new HeroZone(this);
+        zone.createHeroZone(this.game.canvas.width / 2 - 100, this.game.canvas.height / 2);
+
         matchmakingText.destroy();
         this.socket.emit('ready');
       }
@@ -138,72 +138,111 @@ class MainScene extends Phaser.Scene {
        * `data` will contain an array of heroes (the hand), 5 random heroes picked from the user's inventory and the user's new inventory state in-game
        * The inventory in this instance is the inventory in the game state, not the database.
        */
-      if (eventName == "newPlayerHand") {
-        const newHand = data.hand;
-        const newInventory = data.inventory;
-        this.gameManager.setPlayerInventory(newInventory);
-        this.gameManager.setPlayerCurrentHand(newHand);
-        this.heroDealer.loadUserCards(this.gameManager.player.currentHand);
+      if (eventName == 'newPlayerHand') {
+        console.log(data);
+        this.gameManager.setPlayer(data);
+        this.gameManager.renderPlayer();
+        this.gameManager.heroDealer.loadUserCards(this.gameManager.player.currentHand);
       }
 
       /**
        * newOpponentHand: Same as newPlayerHand, but for the opponent's new hand
        */
       if (eventName == 'newOpponentHand') {
-        const newOpponentHand = data;
-        this.gameManager.setOpponentCurrentHand(newOpponentHand);
-        this.heroDealer.loadOpponentCards(this.gameManager.opponent.currentHand);
+        this.gameManager.setOpponent(data);
+        this.gameManager.renderOpponent();
+        this.gameManager.heroDealer.removeOpponentHand();
+        this.gameManager.heroDealer.loadOpponentCards(this.gameManager.opponent.currentHand);
       }
 
-      if (eventName == "yourTurn") {
+      if (eventName == 'playerTurn') {
         this.gameManager.playerTurn = true;
+        this.gameManager.heroDealer.enableInteractive();
+        this.gameManager.renderTurnText('Your Turn');
       }
 
-      if (eventName == "opponentTurn") {
+      if (eventName == 'opponentTurn') {
         this.gameManager.playerTurn = false;
+        this.gameManager.heroDealer.disableInteractive();
+        this.gameManager.renderTurnText('Opponent Turn');
       }
-  
+
+      if (eventName == 'opponentHeroPlayed') {
+        this.gameManager.renderOpponentCardPlayed(data.hero, data.container);
+      }
+
+      if (eventName == 'attackPlayed') {
+        const player: Player = data;
+
+        this.gameManager.handleAttackOn(player);
+      }
+
+      if (eventName == 'endPlayerTurn') {
+        this.gameManager.emptyCurrentHand();
+        this.gameManager.heroDealer.removeUserHand();
+      }
+
       if (eventName == 'message') {
         console.log(data);
       }
 
       if (eventName == 'win') {
-        console.log('YOU WON');
+        this.gameManager.handleWin();
+        this.socket.emit('win');
+        this.endFunction(true);
+        this.sys.game.destroy(true);
       }
       if (eventName == 'lose') {
-        console.log('YOU LOSE');
+        this.endFunction(false);
+        this.sys.game.destroy(true);
       }
     });
 
-    this.input.on('drag', function (pointer, gameObject, dragX, dragY) {
+    this.input.on('dragstart', () => {
+      this.sound.play('cardPlayed');
+    });
+
+    this.input.on('drag', (pointer, gameObject, dragX, dragY) => {
       gameObject.x = dragX;
       gameObject.y = dragY;
     });
 
-    this.input.on('dragend', function (pointer, gameObject, dropped) {
+    this.input.on('dragend', (pointer, gameObject, dropped) => {
       if (!dropped) {
         gameObject.x = gameObject.input.dragStartX;
         gameObject.y = gameObject.input.dragStartY;
       }
     });
 
-    this.input.on('drop', function (pointer, gameObject, dropZone) {
-      var dropZoneCards = dropZone.data.values.cards;
+    this.input.on('drop', (pointer, gameObject, dropZone) => {
+      this.gameManager.player.discardPile.push(gameObject.getData('hero'));
+      this.gameManager.renderPlayer();
+      this.socket.emit('heroPlayed', [gameObject, gameObject.getData('hero')]);
 
-      if (dropZoneCards >= 3) {
-        gameObject.x = gameObject.input.dragStartX;
-        gameObject.y = gameObject.input.dragStartY;
-        return;
-      }
-  
-      dropZone.data.values.cards++;
-      gameObject.x = (dropZone.x - (dropZone.width / 2)) + (dropZone.data.values.cards * 150);
+      gameObject.x = dropZone.x - dropZone.width / 2 + dropZone.data.values.cards * 150;
       gameObject.y = dropZone.y - 350;
       gameObject.disableInteractive();
+
+      this.tweens.add({
+        targets: gameObject,
+        x: this.game.canvas.width,
+        duration: 2000,
+        ease: 'Power2',
+      });
+
+      this.tweens.add({
+        targets: gameObject,
+        alpha: 0,
+        duration: 300,
+        ease: 'Power2',
+      });
     });
   }
   preload() {
     this.load.image('heroCard', 'assets/images/card.png');
+    this.load.audio('attack', 'assets/sounds/attack_sound.wav');
+    this.load.audio('cardPlayed', 'assets/sounds/card_played.wav');
+    this.load.audio('cardDestroyed', 'assets/sounds/card_destroyed.wav');
   }
   update() {}
 }
