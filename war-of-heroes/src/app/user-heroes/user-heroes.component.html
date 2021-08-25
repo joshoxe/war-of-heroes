@@ -8,34 +8,11 @@
       (click)="onSelect(hero)"  
       *ngFor="let hero of heroesInventory"
     >
-      <div>
+      <div class="hero-card">
         <app-hero-card
-          class="hero-card"
           [class.selected]="hero === selectedHero"
           [hero]="hero"
         ></app-hero-card>
-        <button type="button" class="btn btn-primary" (click)="transferToDeckFromInventory(hero)">Add to deck</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-<div class="deck">
-  <h3>Deck</h3>
-  <div
-    id="deck-list"
-    class="hero-list-deck"
-  >
-    <div
-
-      *ngFor="let deckHero of heroesDeck"
-    >
-      <div class="drag-hero">
-        <app-hero-card
-          class="hero-card"
-          [hero]="deckHero"
-        ></app-hero-card>
-        <button type="button" class="btn btn-primary" (click)="transferToInventoryFromDeck(deckHero)">Remove</button>
       </div>
     </div>
   </div>

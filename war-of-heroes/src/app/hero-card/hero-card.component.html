@@ -8,23 +8,17 @@
     </div>
     <div class="row">
       <div class="col-sm">
-        {{ hero.attackDamage }}
+        {{ hero.ability.amount }}
       </div>
 
-      <div class="col-sm">
-        {{ hero.ultimateAttackDamage }}
-      </div>
     </div>
 
 
     <div class="row">
       <div class="col-sm">
-        <label for="hero-name">Attack</label>
+        <label for="hero-name">{{ hero.ability.type }}</label>
       </div>
 
-      <div class="col-sm">
-        <label for="hero-name">Ultimate Attack</label>
-      </div>
     </div>
     <div class="row">
       <div class="col-sm">
