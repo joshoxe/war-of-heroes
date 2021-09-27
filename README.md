@@ -2,7 +2,16 @@
 
 A real-time multiplayer collectible card game, inspired by the [Angular Tour of Heroes](https://angular.io/tutorial) tutorial, the idea was to take Heroes and add persistent storage, user accounts, battling and collecting to create a full web app game.
 
-### MVP
+This is the repository for the Angular front-end application
+
+[User API](https://github.com/joshoxe/war-of-heroes-users-api)
+
+[Hero API](https://github.com/joshoxe/war-of-heroes-game-api)
+
+[Socket.IO game server](https://github.com/joshoxe/war-of-heroes-game-server)
+
+
+## MVP
 
 - User accounts
    - OAuth
@@ -17,7 +26,7 @@ A real-time multiplayer collectible card game, inspired by the [Angular Tour of 
    - In-game currency
    - Buy cards from shop 
 
-### Tech stack
+## Tech stack
 
 - C#
 - ASP.NET
