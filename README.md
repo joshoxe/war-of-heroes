@@ -13,7 +13,6 @@ A real-time multiplayer collectible card game, inspired by the [Angular Tour of 
 - Battle others
    - Matchmaking
    - Real-time, turn-based battles
-   - Gameplay
 - Shop
    - In-game currency
    - Buy cards from shop 
@@ -23,13 +22,9 @@ A real-time multiplayer collectible card game, inspired by the [Angular Tour of 
 - C#
 - ASP.NET
 - SQL / Entity Framework
-- NUnit/NCrunch/FakeItEasy
-- ReSharper
 - TypeScript
 - Angular
 - Socket.IO
 - Phaser 3
-- Git/GitHub
-- Terraform
-- Azure
-   - Resource groups, app services, SQL server and databases 
+- Terraform for IaC
+- Hosted in Azure
