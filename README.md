@@ -1,7 +1,5 @@
 # War of Heroes
 
-## Summary
-
 A real-time multiplayer collectible card game, inspired by the [Angular Tour of Heroes](https://angular.io/tutorial) tutorial, the idea was to take Heroes and add persistent storage, user accounts, battling and collecting to create a full web app game.
 
 ### MVP
